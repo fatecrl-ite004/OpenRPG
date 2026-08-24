@@ -1,84 +1,74 @@
 # OPEN RPG
 
 - **Equipe:** Leandro Andrade dos Santos, Ryan Xavier Paz Corrêa Amaral
-- **Público-alvo:** Comunidade Geek
+- **Público-alvo:** Comunidade Geek, Mestres e Jogadores de RPG de Mesa (TTRPG)
 - **Tipo de aplicação:** Aplicação Web
 - **Plataforma(s):** Web
 - **Domínio:** Entretenimento
-- **Previsão de entrega:** N/A
+- **Previsão de entrega:** A definir
 
 ## Visão geral
 
-    Sistema web para gerenciameno de sessões de RPG com foco em ajudar Mestres de RPG novatos e experientes a organizar suas sessões de RPG, armazenando personagens, itens dos jogadores, vida de cada integrante etc.
+Sistema web para gerenciamento de sessões de RPG com foco em auxiliar Mestres (novatos e experientes) a planejar e conduzir suas mesas, centralizando fichas de personagens, inventários, pontos de vida, anotações de campanha e status em tempo real.
 
 ## Problema
 
-> Descreva o problema de forma mais detalhada:
-> - Qual é a dor do usuário?
-> - Em que contexto isso acontece?
-> - Por que é relevante resolver isso?
-    Mestre de sessões de RPG muitas vezes sofrem com a falta de organizações de informações da sua campanha, devido a essa falta de organização muitos elementos da campanha podem acabar não fazendo sentido aos seus jogadores ou até mesmo a falta de interesse de seus jogadores.
+Mestres de RPG frequentemente enfrentam dificuldades para manter organizadas as diversas informações de uma campanha (fichas em papel dispersas, controle manual de vida, e histórico de itens). Essa desorganização gera interrupções constantes na narrativa, inconsistências na história e perda de engajamento por parte dos jogadores durante as sessões.
 
 ## Solução proposta
 
-> Explique como o sistema resolve o problema:
-> - Qual é a proposta principal?
-> - Como o usuário interage com o sistema?
-> - O que torna a solução útil?
-    O Open RPG tem a ideia de organizar e armazenar dados da sessão de RPG. O úsuario pode adicionar novos personagens, itens entre outras coisas para ajudar a organizar sua campanha, elevando assim o desenvolvimento de sua história.
+O **Open RPG** oferece uma plataforma centralizada e acessível via navegador para organizar e armazenar todos os dados da campanha. O Mestre e os jogadores podem cadastrar personagens, gerenciar itens e atualizar atributos vitais de forma prática. A solução otimiza o fluxo da sessão, permitindo que o Mestre foque no desenvolvimento da narrativa e na experiência do grupo.
 
 ## Funcionalidades
 
-> Liste funcionalidades de forma objetiva
-> - Funcionalidade 1
-> - Funcionalidade 2
-> - Funcionalidade 3
-> - …
->
-> Destaque (em negrito ou itálico) funcionalidades que são diferenciais
+- **Cadastro** de Mestres e Jogadores.
+- **Gerenciamento de Campanhas:** criação de salas/sessões e associação de participantes.
+- **Ficha Digital de Personagens:** controle de atributos, pontos de vida (HP), recursos e condições.
+- **Gerenciador de Inventário e Itens:** criação, edição e distribuição de itens e equipamentos.
+- ***Painel do Mestre (Dashboard):*** visualização unificada do status de todos os integrantes da mesa.
+- ***Rolador de Dados Integrado:*** suporte a dados poliédricos (D4, D6, D8, D10, D12, D20, D100) com modificadores.
+- **Diário de Sessão / Anotações:** registro de acontecimentos, NPCs e eventos da campanha.
 
 ## Diferencial / Concorrência
 
-> Existem sistemas parecidos?
-> - Cite exemplos (se houver)
-> - O que seu projeto faz melhor ou diferente?
-> 
-> Pode citar apps reais, como:
-> - Trello
-> - Notion
-> - iFood
+- **Concorrentes:** Roll20, Foundry VTT, D&D Beyond e ferramentas genéricas como Notion e Trello.
+- **Diferencial:** Enquanto plataformas como Roll20 e Foundry VTT possuem curva de aprendizado elevada e alto consumo de recursos, e ferramentas como Notion não possuem automações nativas de RPG (como rolagem de dados e atualização de status em tempo real), o Open RPG foca em **simplicidade, leveza e agilidade**, entregando uma interface limpa e focada no que o Mestre precisa consultar durante a partida.
 
 ## Inovação / Criatividade
 
-> O que há de interessante no projeto?
-> - Interface?
-> - Experiência do usuário?
-> - Tecnologia?
-> - Integração com APIs?
+- **Experiência do Usuário:** Interface minimalista projetada para minimizar cliques e evitar que o Mestre pause a narrativa para buscar informações.
+- **Acessibilidade Web Direta:** Funciona diretamente no navegador em qualquer dispositivo sem necessidade de downloads ou plugins pesados.
+- **Foco na Agilidade Narrativa:** Organização visual intuitiva que prioriza o ritmo da sessão em vez de grids complexos.
 
 ## Escopo do projeto
 
 ### Essencial (MVP – obrigatório)
 
-> O que precisa existir para o sistema funcionar?
+- Cadastro de personagens.
+- Criação e listagem de campanhas/sessões.
+- Ficha básica de personagem (nome, classe, nível, HP atual/máximo e atributos).
+- Painel simplificado para o Mestre visualizar a vida e status dos personagens.
 
 ### Importante (se houver tempo)
 
-> Funcionalidades adicionais
+- Gerenciador de inventário e equipamentos por personagem.
+- Rolador de dados digital integrado com histórico.
+- Bloco de anotações e registro de NPCs da campanha.
 
 ### Opcional (baixa prioridade)
 
-> Ideias extras
+- Exportação e importação de fichas em formato JSON/PDF.
+- Temas visuais personalizáveis (Dark Mode temático).
 
 ## Planejamento (simplificado)
 
-| Etapa | Descrição               | Prazo |
-| ----- | ----------------------- | ----- |
-| 1     | Definição do projeto    |       |
-| 2     | Desenvolvimento inicial |       |
-| 3     | Integração              |       |
-| 4     | Testes                  |       |
-| 5     | Entrega final           |       |
+| Etapa | Descrição                                                 | Prazo      |
+| ----- | --------------------------------------------------------- | ---------- |
+| 1     | Definição de requisitos, escopo e prototipação de UI      |            |
+| 3     | Integração do Painel do Mestre e controle de inventário   |            |
+| 2     | Desenvolvimento do MVP (Autenticação, Campanhas e Fichas) |            |
+| 4     | Testes de usabilidade, ajustes e correções de bugs        |            |
+| 5     | Entrega final, documentação e apresentação                |            |
 
 ## Tecnologias (opcional neste momento)
 
