@@ -44,6 +44,7 @@ O **Open RPG** oferece uma plataforma centralizada e acessível via navegador pa
 
 ### Essencial (MVP – obrigatório)
 
+- Exportar/importar dados de forma "portátil"
 - Cadastro de personagens.
 - Criação e listagem de campanhas/sessões.
 - Ficha básica de personagem (nome, classe, nível, HP atual/máximo e atributos).
