@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenRPG - Painel do Mestre</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar collapsed">
+      <div class="brand">
+        <button class="btn-toggle-sidebar" onclick="toggleSidebar()" title="Recolher menu lateral">◀</button>
+        <img src="img/icon.webp" alt="OpenRPG" class="brand-icon">
+        <h1>OpenRPG</h1>
+        <div id="sidebar-campanha" class="sidebar-campaign-info"></div>
+      </div>
+      <nav class="nav-menu">
+        <a id="btn-tab-home" class="nav-btn" href="index.html">
+          🏠 Início
+        </a>
+        <a id="btn-tab-sessao" class="nav-btn" href="combate.html">
+          ⚔️ Sessão / Combate
+        </a>
+        <a id="btn-tab-mestre" class="nav-btn active" href="mestre.html">
+          👑 Painel do Mestre
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <button class="btn-open-sidebar" onclick="toggleSidebar()">
+        ☰ Abrir Menu
+      </button>
+
+      <!-- Master Panel -->
+      <section class="section-container">
+        <div class="section-header">
+          <h2>👑 Painel do Mestre</h2>
+          <p>Organize seus jogadores da campanha, anotações de sessão e rolagens rápidas.</p>
+        </div>
+
+        <div class="mestre-grid">
+          <!-- Players -->
+          <div class="panel">
+            <div class="panel-title">👥 Jogadores da Campanha</div>
+            <div class="form-grid" style="margin-bottom: 12px;">
+              <input id="pj-nome" placeholder="Nome do Jogador / Personagem">
+              <input id="pj-classe" placeholder="Classe / Ocupação">
+              <input id="pj-vida" type="number" placeholder="Vida Máx">
+              <button onclick="adicionarJogador()" class="btn-success">+ Cadastrar</button>
+            </div>
+            <div id="lista-jogadores" class="player-list"></div>
+          </div>
+
+          <!-- Notes & Dice -->
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="panel">
+              <div class="panel-title">🎲 Rolador Rápido de Dados</div>
+              <div class="dice-roller">
+                <button class="dice-btn" onclick="rolarDado(4)">d4</button>
+                <button class="dice-btn" onclick="rolarDado(6)">d6</button>
+                <button class="dice-btn" onclick="rolarDado(8)">d8</button>
+                <button class="dice-btn" onclick="rolarDado(10)">d10</button>
+                <button class="dice-btn" onclick="rolarDado(12)">d12</button>
+                <button class="dice-btn" onclick="rolarDado(20)">d20</button>
+                <button class="dice-btn" onclick="rolarDado(100)">d100</button>
+              </div>
+              <div id="dice-result" class="dice-result">Clique em um dado para rolar</div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-title">📝 Bloco de Notas do Mestre (Salva Automático)</div>
+              <textarea 
+                id="gm-notes" 
+                class="gm-notes" 
+                placeholder="Escreva segredos, NPCs, pistas, planos da sessão..."
+                oninput="salvarNotas(this.value)"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // State
+    const campAtiva = JSON.parse(localStorage.getItem('openrpg_campanha_ativa') || 'null');
+    const campKey = campAtiva ? `_${campAtiva.id}` : '';
+    let jogadores = JSON.parse(localStorage.getItem(`openrpg_jogadores${campKey}`) || '[]');
+
+    // Sidebar Toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const isCollapsed = sidebar.classList.toggle('collapsed');
+      localStorage.setItem('openrpg_sidebar_collapsed', isCollapsed);
+    }
+
+    function aplicarEstadoSidebar() {
+      const saved = localStorage.getItem('openrpg_sidebar_collapsed');
+      if (saved !== null) {
+        document.getElementById('sidebar').classList.toggle('collapsed', saved === 'true');
+      }
+    }
+
+    function carregarCampanhaSidebar() {
+      const el = document.getElementById('sidebar-campanha');
+      if (campAtiva && campAtiva.nome) {
+        el.innerHTML = `<span class="camp-tag">🎲 ${campAtiva.nome}</span>`;
+      } else {
+        el.innerHTML = `<a href="index.html" class="camp-tag" style="text-decoration:none; border-color: var(--danger); color: var(--danger);">⚠️ Selecionar Campanha</a>`;
+      }
+    }
+
+    // Players
+    function adicionarJogador() {
+      const nome = document.getElementById('pj-nome').value.trim();
+      const classe = document.getElementById('pj-classe').value.trim() || 'Aventureiro';
+      const vida = parseInt(document.getElementById('pj-vida').value) || 20;
+
+      if (!nome) return;
+
+      jogadores.push({ nome, classe, vida });
+      localStorage.setItem(`openrpg_jogadores${campKey}`, JSON.stringify(jogadores));
+      
+      document.getElementById('pj-nome').value = '';
+      document.getElementById('pj-classe').value = '';
+      document.getElementById('pj-vida').value = '';
+      renderJogadores();
+    }
+
+    function removerJogador(index) {
+      jogadores.splice(index, 1);
+      localStorage.setItem(`openrpg_jogadores${campKey}`, JSON.stringify(jogadores));
+      renderJogadores();
+    }
+
+    function enviarParaCombate(index) {
+      const j = jogadores[index];
+      const personagens = JSON.parse(localStorage.getItem(`openrpg_personagens${campKey}`) || '[]');
+      personagens.push({
+        nome: j.nome,
+        vidaAtual: j.vida,
+        vidaMax: j.vida,
+        inic: 10,
+        dor: 0,
+        arma1: 'Arma Principal', arma2: 'Arma Secundária', arma3: 'Reserva',
+        muni1: 0, max1: 0, lim1: 0,
+        muni2: 0, max2: 0, lim2: 0,
+        muni3: 0, max3: 0, lim3: 0
+      });
+      localStorage.setItem(`openrpg_personagens${campKey}`, JSON.stringify(personagens));
+      window.location.href = 'combate.html';
+    }
+
+    function renderJogadores() {
+      const el = document.getElementById('lista-jogadores');
+      if (jogadores.length === 0) {
+        el.innerHTML = '<p class="empty-message">Nenhum jogador cadastrado ainda nesta campanha.</p>';
+        return;
+      }
+      el.innerHTML = jogadores.map((j, i) => `
+        <div class="player-item">
+          <div class="player-info">
+            <strong>${j.nome}</strong>
+            <span>${j.classe} • Vida: ${j.vida}</span>
+          </div>
+          <div style="display:flex; gap: 8px;">
+            <button class="btn-copy" onclick="enviarParaCombate(${i})">⚔️ Ao Combate</button>
+            <button class="btn-danger" onclick="removerJogador(${i})">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Notes & Dice
+    function salvarNotas(texto) {
+      localStorage.setItem(`openrpg_gm_notes${campKey}`, texto);
+    }
+
+    function rolarDado(faces) {
+      const resultado = Math.floor(Math.random() * faces) + 1;
+      const el = document.getElementById('dice-result');
+      el.innerText = `🎲 d${faces} ➔ ${resultado}`;
+    }
+
+    // Init
+    window.onload = function() {
+      aplicarEstadoSidebar();
+      carregarCampanhaSidebar();
+      const notasSalvas = localStorage.getItem(`openrpg_gm_notes${campKey}`);
+      if (notasSalvas) {
+        document.getElementById('gm-notes').value = notasSalvas;
+      }
+      renderJogadores();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenRPG - Controle de Sessão</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar collapsed">
+      <div class="brand">
+        <button class="btn-toggle-sidebar" onclick="toggleSidebar()" title="Recolher menu lateral">◀</button>
+        <img src="img/icon.webp" alt="OpenRPG" class="brand-icon">
+        <h1>OpenRPG</h1>
+        <div id="sidebar-campanha" class="sidebar-campaign-info"></div>
+      </div>
+      <nav class="nav-menu">
+        <a id="btn-tab-home" class="nav-btn" href="index.html">
+          🏠 Início
+        </a>
+        <a id="btn-tab-sessao" class="nav-btn active" href="combate.html">
+          ⚔️ Sessão / Combate
+        </a>
+        <a id="btn-tab-mestre" class="nav-btn" href="mestre.html">
+          👑 Painel do Mestre
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <button class="btn-open-sidebar" onclick="toggleSidebar()">
+        ☰ Abrir Menu
+      </button>
+      
+      <!-- Session & Combat -->
+      <section class="section-container">
+        <div class="section-header">
+          <h2>⚔️ Controle de Sessão & Combate</h2>
+          <p>Gerencie a iniciativa, vida, dor e munições dos personagens em combate.</p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Adicionar Personagem / Inimigo</div>
+          <div class="form-grid">
+            <input id="nome" placeholder="Nome do Personagem">
+            <input id="vida" type="number" placeholder="Vida">
+            <input id="inic" type="number" placeholder="Iniciativa">
+            <input id="dor" type="number" placeholder="Dor">
+            <input id="arma1" placeholder="Arma 1 (ex: Pistola)">
+            <input id="arma2" placeholder="Arma 2">
+            <input id="arma3" placeholder="Arma 3">
+            <button onclick="adicionar()" class="btn-success">+ Adicionar</button>
+          </div>
+        </div>
+
+        <div id="lista"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // State
+    const campAtiva = JSON.parse(localStorage.getItem('openrpg_campanha_ativa') || 'null');
+    const campKey = campAtiva ? `_${campAtiva.id}` : '';
+    let personagens = JSON.parse(localStorage.getItem(`openrpg_personagens${campKey}`) || '[]');
+
+    // Sidebar Toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const isCollapsed = sidebar.classList.toggle('collapsed');
+      localStorage.setItem('openrpg_sidebar_collapsed', isCollapsed);
+    }
+
+    function aplicarEstadoSidebar() {
+      const saved = localStorage.getItem('openrpg_sidebar_collapsed');
+      if (saved !== null) {
+        document.getElementById('sidebar').classList.toggle('collapsed', saved === 'true');
+      }
+    }
+
+    function carregarCampanhaSidebar() {
+      const el = document.getElementById('sidebar-campanha');
+      if (campAtiva && campAtiva.nome) {
+        el.innerHTML = `<span class="camp-tag">🎲 ${campAtiva.nome}</span>`;
+      } else {
+        el.innerHTML = `<a href="index.html" class="camp-tag" style="text-decoration:none; border-color: var(--danger); color: var(--danger);">⚠️ Selecionar Campanha</a>`;
+      }
+    }
+
+    // Combat
+    function salvarCombate() {
+      localStorage.setItem(`openrpg_personagens${campKey}`, JSON.stringify(personagens));
+    }
+
+    function adicionar() {
+      const nome = document.getElementById('nome').value || 'Sem Nome';
+      const vida = parseInt(document.getElementById('vida').value) || 0;
+      const inic = parseInt(document.getElementById('inic').value) || 0;
+      const dor = parseInt(document.getElementById('dor').value) || 0;
+      const arma1 = document.getElementById('arma1').value || 'Arma 1';
+      const arma2 = document.getElementById('arma2').value || 'Arma 2';
+      const arma3 = document.getElementById('arma3').value || 'Arma 3';
+
+      personagens.push({
+        nome,
+        vidaAtual: vida,
+        vidaMax: vida,
+        inic,
+        dor,
+        arma1, arma2, arma3,
+        muni1: 0, max1: 0, lim1: 0,
+        muni2: 0, max2: 0, lim2: 0,
+        muni3: 0, max3: 0, lim3: 0
+      });
+
+      salvarCombate();
+      renderCombate();
+      document.querySelectorAll('.form-grid input').forEach(i => i.value = '');
+    }
+
+    function editarTexto(i, campo, valor) {
+      personagens[i][campo] = valor;
+      salvarCombate();
+    }
+
+    function editarNumero(i, campo, valor) {
+      personagens[i][campo] = parseInt(valor) || 0;
+      salvarCombate();
+    }
+
+    function duplicar(i) {
+      personagens.push({ ...personagens[i], nome: personagens[i].nome + ' (Cópia)' });
+      salvarCombate();
+      renderCombate();
+    }
+
+    function remover(i) {
+      personagens.splice(i, 1);
+      salvarCombate();
+      renderCombate();
+    }
+
+    function renderCombate() {
+      personagens.sort((a, b) => b.inic - a.inic);
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+
+      personagens.forEach((p, i) => {
+        lista.innerHTML += `
+          <div class="char-card">
+            <div class="char-header">
+              <input value="${p.nome}" onchange="editarTexto(${i}, 'nome', this.value)">
+              <div class="stat-box">🩸 Atual: <input type="number" value="${p.vidaAtual}" onchange="editarNumero(${i}, 'vidaAtual', this.value)"></div>
+              <div class="stat-box">🫀 Máx: <input type="number" value="${p.vidaMax}" onchange="editarNumero(${i}, 'vidaMax', this.value)"></div>
+              <div class="stat-box">💢 Dor: <input type="number" value="${p.dor}" onchange="editarNumero(${i}, 'dor', this.value)"></div>
+              <div class="stat-box">🎯 Inic: <input type="number" value="${p.inic}" onchange="editarNumero(${i}, 'inic', this.value)"></div>
+              <div class="char-actions">
+                <button onclick="duplicar(${i})" class="btn-copy">Copiar</button>
+                <button onclick="remover(${i})" class="btn-danger">Remover</button>
+              </div>
+            </div>
+            <div class="weapons-grid">
+              ${armaBox(i, p, 'arma1', 'muni1', 'max1', 'lim1')}
+              ${armaBox(i, p, 'arma2', 'muni2', 'max2', 'lim2')}
+              ${armaBox(i, p, 'arma3', 'muni3', 'max3', 'lim3')}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function armaBox(i, p, a, m, x, l) {
+      return `
+        <div class="weapon-box">
+          <input value="${p[a]}" onchange="editarTexto(${i}, '${a}', this.value)" placeholder="Nome da Arma">
+          <div class="weapon-stat-row"><span>Munição:</span><input type="number" value="${p[m]}" onchange="editarNumero(${i}, '${m}', this.value)"></div>
+          <div class="weapon-stat-row"><span>Pente Máx:</span><input type="number" value="${p[x]}" onchange="editarNumero(${i}, '${x}', this.value)"></div>
+          <div class="weapon-stat-row"><span>Limite Total:</span><input type="number" value="${p[l]}" onchange="editarNumero(${i}, '${l}', this.value)"></div>
+        </div>
+      `;
+    }
+
+    // Init
+    window.onload = function() {
+      aplicarEstadoSidebar();
+      carregarCampanhaSidebar();
+      renderCombate();
+    };
+  </script>
+</body>
+</html>

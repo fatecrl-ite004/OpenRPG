@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenRPG - Início</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar collapsed">
+      <div class="brand">
+        <button class="btn-toggle-sidebar" onclick="toggleSidebar()" title="Recolher menu lateral">◀</button>
+        <img src="img/icon.webp" alt="OpenRPG" class="brand-icon">
+        <h1>OpenRPG</h1>
+        <div id="sidebar-campanha" class="sidebar-campaign-info"></div>
+      </div>
+      <nav class="nav-menu">
+        <a id="btn-tab-home" class="nav-btn active" href="index.html">
+          🏠 Início
+        </a>
+        <a id="btn-tab-sessao" class="nav-btn" href="combate.html">
+          ⚔️ Sessão / Combate
+        </a>
+        <a id="btn-tab-mestre" class="nav-btn" href="mestre.html">
+          👑 Painel do Mestre
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <button class="btn-open-sidebar" onclick="toggleSidebar()">
+        ☰ Abrir Menu
+      </button>
+
+      <!-- Hero Section -->
+      <section class="home-hero">
+        <img src="img/icon.webp" alt="OpenRPG" class="home-logo">
+        <h1>OpenRPG</h1>
+        <p class="home-description">
+          Sua plataforma ágil para mestrar e jogar RPG de mesa. Crie sua campanha, organize fichas, controle a ordem de combate e acesse ferramentas rápidas para a sua sessão.
+        </p>
+      </section>
+
+      <!-- Campaign Management Area -->
+      <section class="section-container" style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- Active Campaign Card (shown when there is an active campaign) -->
+        <div id="active-campaign-panel" class="panel" style="display: none; margin-bottom: 0;">
+          <div class="panel-title">🎲 Campanha Ativa</div>
+          <div class="campaign-active-box">
+            <div>
+              <h3 id="display-camp-nome" style="font-size: 18px; margin-bottom: 4px;"></h3>
+              <p id="display-camp-cenario" style="color: var(--accent); font-size: 13px; font-weight: 500;"></p>
+              <p id="display-camp-desc" style="color: var(--text-muted); font-size: 13px; margin-top: 6px;"></p>
+            </div>
+            <button onclick="editarCampanhaAtiva()" class="btn-copy">✏️ Editar Campanha</button>
+          </div>
+
+          <!-- Unlocked Functions -->
+          <div class="action-card-grid">
+            <a href="combate.html" class="action-card">
+              <h3>⚔️ Sessão & Combate</h3>
+              <p>Gerencie iniciativa, pontos de vida, dor e munições dos personagens em combate.</p>
+            </a>
+            <a href="mestre.html" class="action-card">
+              <h3>👑 Painel do Mestre</h3>
+              <p>Organize jogadores da mesa, use o rolador de dados e faça anotações de sessão.</p>
+            </a>
+          </div>
+        </div>
+
+        <!-- List of All Created Campaigns (shown below active campaign) -->
+        <div id="campaigns-list-panel" class="panel" style="margin-bottom: 0;">
+          <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>📚 Todas as Suas Campanhas</span>
+            <button onclick="abrirFormularioCriar()" class="btn-success" style="padding: 5px 12px; font-size: 13px;">+ Nova Campanha</button>
+          </div>
+          <div id="saved-campaigns-list" class="player-list"></div>
+        </div>
+
+        <!-- Create/Edit Campaign Form -->
+        <div id="create-campaign-panel" class="panel" style="display: none; margin-bottom: 0;">
+          <div id="form-camp-title" class="panel-title">✨ Criar Nova Campanha</div>
+          <p id="form-camp-desc" style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">
+            Preencha os dados abaixo para iniciar uma nova campanha e isolar suas fichas, combates e notas.
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <input id="camp-nome" placeholder="Nome da Campanha (ex: A Mina Perdida)">
+            <input id="camp-cenario" placeholder="Cenário / Ambientação (ex: Fantasia Medieval, Cyberpunk, Terror)">
+            <textarea id="camp-desc" placeholder="Descrição ou premissa da história (opcional)" style="height: 80px; resize: vertical;"></textarea>
+            <div style="display: flex; gap: 8px;">
+              <button id="btn-salvar-camp" onclick="salvarCampanha()" class="btn-success">+ Salvar e Ativar</button>
+              <button onclick="fecharFormulario()" style="background: var(--bg-card); color: var(--text-muted);">Cancelar</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // State
+    let campanhas = JSON.parse(localStorage.getItem('openrpg_campanhas') || '[]');
+    let campanhaAtiva = JSON.parse(localStorage.getItem('openrpg_campanha_ativa') || 'null');
+    let editandoId = null;
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const isCollapsed = sidebar.classList.toggle('collapsed');
+      localStorage.setItem('openrpg_sidebar_collapsed', isCollapsed);
+    }
+
+    function aplicarEstadoSidebar() {
+      const saved = localStorage.getItem('openrpg_sidebar_collapsed');
+      if (saved !== null) {
+        document.getElementById('sidebar').classList.toggle('collapsed', saved === 'true');
+      }
+    }
+
+    function abrirFormularioCriar() {
+      editandoId = null;
+      document.getElementById('form-camp-title').innerText = 'Criar Nova Campanha';
+      document.getElementById('form-camp-desc').innerText = 'Preencha os dados abaixo para iniciar uma nova campanha.';
+      document.getElementById('btn-salvar-camp').innerText = '+ Salvar e Ativar';
+      document.getElementById('camp-nome').value = '';
+      document.getElementById('camp-cenario').value = '';
+      document.getElementById('camp-desc').value = '';
+      document.getElementById('create-campaign-panel').style.display = 'block';
+      document.getElementById('camp-nome').focus();
+    }
+
+    function editarCampanhaAtiva() {
+      if (!campanhaAtiva) return;
+      editandoId = campanhaAtiva.id;
+      document.getElementById('form-camp-title').innerText = '✏️ Editar Campanha';
+      document.getElementById('form-camp-desc').innerText = 'Modifique os detalhes da campanha ativa.';
+      document.getElementById('btn-salvar-camp').innerText = 'Salvar Alterações';
+      document.getElementById('camp-nome').value = campanhaAtiva.nome;
+      document.getElementById('camp-cenario').value = campanhaAtiva.cenario;
+      document.getElementById('camp-desc').value = campanhaAtiva.desc || '';
+      document.getElementById('create-campaign-panel').style.display = 'block';
+      document.getElementById('camp-nome').focus();
+    }
+
+    function fecharFormulario() {
+      editandoId = null;
+      document.getElementById('create-campaign-panel').style.display = 'none';
+    }
+
+    function salvarDados() {
+      localStorage.setItem('openrpg_campanhas', JSON.stringify(campanhas));
+      localStorage.setItem('openrpg_campanha_ativa', JSON.stringify(campanhaAtiva));
+    }
+
+    function carregarCampanhaSidebar() {
+      const el = document.getElementById('sidebar-campanha');
+      if (campanhaAtiva && campanhaAtiva.nome) {
+        el.innerHTML = `<span class="camp-tag">🎲 ${campanhaAtiva.nome}</span>`;
+      } else {
+        el.innerHTML = `<span class="camp-tag" style="border-color: var(--danger); color: var(--danger);">⚠️ Nenhuma Campanha</span>`;
+      }
+    }
+
+    function salvarCampanha() {
+      const nome = document.getElementById('camp-nome').value.trim();
+      const cenario = document.getElementById('camp-cenario').value.trim() || 'Geral';
+      const desc = document.getElementById('camp-desc').value.trim();
+
+      if (!nome) return;
+
+      if (editandoId) {
+        const index = campanhas.findIndex(c => c.id === editandoId);
+        if (index !== -1) {
+          campanhas[index].nome = nome;
+          campanhas[index].cenario = cenario;
+          campanhas[index].desc = desc;
+          campanhaAtiva = campanhas[index];
+        }
+      } else {
+        const novaCampanha = { id: Date.now(), nome, cenario, desc };
+        campanhas.push(novaCampanha);
+        campanhaAtiva = novaCampanha;
+      }
+
+      salvarDados();
+      fecharFormulario();
+      render();
+    }
+
+    function selecionarCampanha(id) {
+      const camp = campanhas.find(c => c.id === id);
+      if (camp) {
+        campanhaAtiva = camp;
+        salvarDados();
+        render();
+      }
+    }
+
+    function excluirCampanha(idParaExcluir) {
+      const targetId = idParaExcluir || (campanhaAtiva ? campanhaAtiva.id : null);
+      if (!targetId) return;
+
+      localStorage.removeItem(`openrpg_personagens_${targetId}`);
+      localStorage.removeItem(`openrpg_jogadores_${targetId}`);
+      localStorage.removeItem(`openrpg_gm_notes_${targetId}`);
+
+      campanhas = campanhas.filter(c => c.id !== targetId);
+      if (campanhaAtiva && campanhaAtiva.id === targetId) {
+        campanhaAtiva = campanhas.length > 0 ? campanhas[0] : null;
+      }
+      salvarDados();
+      render();
+    }
+
+    function render() {
+      carregarCampanhaSidebar();
+      const activePanel = document.getElementById('active-campaign-panel');
+      const createPanel = document.getElementById('create-campaign-panel');
+      const listPanel = document.getElementById('campaigns-list-panel');
+      const listEl = document.getElementById('saved-campaigns-list');
+
+      if (campanhaAtiva) {
+        activePanel.style.display = 'block';
+        document.getElementById('display-camp-nome').innerText = campanhaAtiva.nome;
+        document.getElementById('display-camp-cenario').innerText = `Cenário: ${campanhaAtiva.cenario}`;
+        document.getElementById('display-camp-desc').innerText = campanhaAtiva.desc || '';
+      } else {
+        activePanel.style.display = 'none';
+        // If no campaign exists, show creation form automatically
+        abrirFormularioCriar();
+      }
+
+      if (campanhas.length === 0) {
+        listPanel.style.display = 'none';
+      } else {
+        listPanel.style.display = 'block';
+        listEl.innerHTML = campanhas.map(c => {
+          const isAtiva = campanhaAtiva && campanhaAtiva.id === c.id;
+          return `
+            <div class="player-item" style="${isAtiva ? 'border-color: var(--accent); background: rgba(59, 130, 246, 0.08);' : ''}">
+              <div class="player-info">
+                <strong>${c.nome} ${isAtiva ? '<span style="color: var(--accent); font-size: 12px; margin-left: 6px;"> (Ativa)</span>' : ''}</strong>
+                <span>${c.cenario}${c.desc ? ' • ' + c.desc : ''}</span>
+              </div>
+              <div style="display:flex; gap: 8px; align-items: center;">
+                ${isAtiva ? '' : `<button class="btn-copy" onclick="selecionarCampanha(${c.id})">Trocar</button>`}
+                <button class="btn-danger" onclick="excluirCampanha(${c.id})" title="Excluir campanha">✕</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    window.onload = function() {
+      aplicarEstadoSidebar();
+      render();
+    };
+  </script>
+</body>
+</html>
