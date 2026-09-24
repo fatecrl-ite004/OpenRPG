@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>OpenRPG - Fichas</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app-container">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside id="sidebar" class="sidebar collapsed">
+
+      <div class="brand">
+
+        <button
+          class="btn-toggle-sidebar"
+          onclick="toggleSidebar()"
+          title="Recolher menu lateral"
+        >
+          ◀
+        </button>
+
+        <img
+          src="img/icon.webp"
+          alt="OpenRPG"
+          class="brand-icon"
+        >
+
+        <h1>OpenRPG</h1>
+
+        <div
+          id="sidebar-campanha"
+          class="sidebar-campaign-info"
+        ></div>
+
+      </div>
+
+
+      <nav class="nav-menu">
+
+        <a
+          class="nav-btn"
+          href="index.html"
+        >
+          🏠 Início
+        </a>
+
+        <a
+          class="nav-btn"
+          href="combate.html"
+        >
+          ⚔️ Sessão / Combate
+        </a>
+
+        <a
+          class="nav-btn"
+          href="mestre.html"
+        >
+          👑 Painel do Mestre
+        </a>
+
+        <a
+          class="nav-btn active"
+          href="fichas.html"
+        >
+          📄 Fichas de Personagem
+        </a>
+
+      </nav>
+
+    </aside>
+
+
+    <!-- ================= BOTÃO MENU ================= -->
+
+    <button
+      class="btn-open-sidebar"
+      onclick="toggleSidebar()"
+    >
+      ☰ Abrir Menu
+    </button>
+
+
+    <!-- ================= CONTEÚDO ================= -->
+
+    <main class="main-content">
+
+      <section
+        class="section-container"
+        style="max-width: 900px; margin: 0 auto;"
+      >
+
+        <div class="section-header">
+
+          <h2>📄 Fichas de Personagem</h2>
+
+          <p>
+            O mestre define os campos e os jogadores
+            preenchem suas próprias fichas.
+          </p>
+
+        </div>
+
+
+        <!-- ==================================================
+             SELECIONAR CAMPANHA
+        ================================================== -->
+
+        <div class="panel">
+
+          <div class="panel-title">
+            🎲 Campanha desta Ficha
+          </div>
+
+          <p style="color: var(--text-muted);">
+
+            Escolha em qual campanha esta ficha será utilizada.
+            As fichas e os parâmetros ficam separados por campanha.
+
+          </p>
+
+
+          <div
+            style="
+              display:flex;
+              gap:10px;
+              margin-top:15px;
+              flex-wrap:wrap;
+              align-items:center;
+            "
+          >
+
+            <select
+              id="seletor-campanha-ficha"
+              onchange="selecionarCampanhaFicha(this.value)"
+              style="
+                flex:1;
+                min-width:220px;
+              "
+            >
+
+              <option value="">
+                Selecione uma campanha...
+              </option>
+
+            </select>
+
+
+            <button
+              class="btn-copy"
+              onclick="window.location.href='index.html'"
+            >
+              ⚙️ Gerenciar Campanhas
+            </button>
+
+          </div>
+
+
+          <div
+            id="aviso-sem-campanha-ficha"
+            style="
+              display:none;
+              margin-top:12px;
+              color:var(--danger);
+            "
+          >
+            ⚠️ Crie ou selecione uma campanha antes de trabalhar com fichas.
+          </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             PARÂMETROS DO MESTRE
+        ================================================== -->
+
+        <div class="panel">
+
+          <div class="panel-title">
+            👑 Parâmetros da Ficha
+          </div>
+
+          <p style="color: var(--text-muted);">
+
+            O mestre define quais informações
+            os jogadores deverão preencher.
+
+          </p>
+
+
+          <div
+            style="
+              display:flex;
+              gap:10px;
+              margin-top:15px;
+              flex-wrap:wrap;
+            "
+          >
+
+            <input
+              id="nome-parametro"
+              type="text"
+              placeholder="Nome do parâmetro"
+            >
+
+
+            <select id="tipo-parametro">
+
+              <option value="text">
+                Texto
+              </option>
+
+              <option value="number">
+                Número
+              </option>
+
+            </select>
+
+
+            <button
+              class="btn-success"
+              onclick="criarParametro()"
+            >
+              + Criar Parâmetro
+            </button>
+
+          </div>
+
+
+          <div
+            id="lista-parametros"
+            style="margin-top:20px;"
+          ></div>
+
+        </div>
+
+
+        <!-- ==================================================
+             CRIAR FICHA
+        ================================================== -->
+
+        <div class="panel">
+
+          <div class="panel-title">
+            📜 Criar Ficha
+          </div>
+
+          <p style="color: var(--text-muted);">
+
+            Crie uma ficha vinculada a um jogador.
+
+          </p>
+
+
+          <div
+            style="
+              display:flex;
+              gap:10px;
+              margin-top:15px;
+              flex-wrap:wrap;
+            "
+          >
+
+            <input
+              id="nome-jogador"
+              type="text"
+              placeholder="Nome do jogador"
+            >
+
+
+            <button
+              class="btn-success"
+              onclick="criarFicha()"
+            >
+              + Criar Ficha
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             FICHAS SALVAS
+        ================================================== -->
+
+        <div class="panel">
+
+          <div class="panel-title">
+            📂 Fichas Salvas
+          </div>
+
+          <p style="color:var(--text-muted);">
+
+            Aqui estão todas as fichas criadas
+            nesta campanha.
+
+          </p>
+
+
+          <div
+            id="lista-fichas"
+            style="margin-top:20px;"
+          ></div>
+
+        </div>
+
+
+        <!-- ==================================================
+             EDITAR FICHA
+        ================================================== -->
+
+        <div
+          id="ficha-editor"
+          class="panel"
+          style="display:none;"
+        >
+
+          <div class="panel-title">
+            ✏️ Modificar Ficha
+          </div>
+
+
+          <div id="campos-ficha"></div>
+
+
+          <div
+            style="
+              display:flex;
+              gap:10px;
+              margin-top:20px;
+              flex-wrap:wrap;
+            "
+          >
+
+            <button
+              class="btn-success"
+              onclick="salvarFicha()"
+            >
+              💾 Salvar Alterações
+            </button>
+
+
+            <button
+              class="btn-danger"
+              onclick="excluirFicha()"
+            >
+              🗑️ Excluir Ficha
+            </button>
+
+
+            <button
+              class="btn-copy"
+              onclick="fecharEditor()"
+            >
+              ✕ Fechar
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script>
+
+    /* ==================================================
+       SIDEBAR
+    ================================================== */
+
+    function toggleSidebar() {
+
+      const sidebar =
+        document.getElementById('sidebar');
+
+      const isCollapsed =
+        sidebar.classList.toggle('collapsed');
+
+      localStorage.setItem(
+        'openrpg_sidebar_collapsed',
+        isCollapsed
+      );
+
+    }
+
+
+    function aplicarEstadoSidebar() {
+
+      const saved =
+        localStorage.getItem(
+          'openrpg_sidebar_collapsed'
+        );
+
+      if (saved !== null) {
+
+        document
+          .getElementById('sidebar')
+          .classList.toggle(
+            'collapsed',
+            saved === 'true'
+          );
+
+      }
+
+    }
+
+
+    /* ==================================================
+       CAMPANHA
+    ================================================== */
+
+    let campanhas = [];
+
+    let campanhaAtiva =
+      JSON.parse(
+        localStorage.getItem(
+          'openrpg_campanha_ativa'
+        ) || 'null'
+      );
+
+
+    function carregarCampanhas() {
+
+      campanhas =
+        JSON.parse(
+          localStorage.getItem(
+            'openrpg_campanhas'
+          ) || '[]'
+        );
+
+    }
+
+
+    function carregarCampanhaSidebar() {
+
+      const el =
+        document.getElementById(
+          'sidebar-campanha'
+        );
+
+
+      if (
+        campanhaAtiva &&
+        campanhaAtiva.nome
+      ) {
+
+        el.innerHTML = `
+          <span class="camp-tag">
+            🎲 ${escapeHTML(campanhaAtiva.nome)}
+          </span>
+        `;
+
+      } else {
+
+        el.innerHTML = `
+          <a
+            href="index.html"
+            class="camp-tag"
+            style="
+              text-decoration:none;
+              border-color:var(--danger);
+              color:var(--danger);
+            "
+          >
+            ⚠️ Selecionar Campanha
+          </a>
+        `;
+
+      }
+
+    }
+
+
+    /* ==================================================
+       SELETOR DE CAMPANHA DA FICHA
+    ================================================== */
+
+    function renderSeletorCampanha() {
+
+      carregarCampanhas();
+
+      const seletor =
+        document.getElementById(
+          'seletor-campanha-ficha'
+        );
+
+      const aviso =
+        document.getElementById(
+          'aviso-sem-campanha-ficha'
+        );
+
+
+      seletor.innerHTML = `
+        <option value="">
+          Selecione uma campanha...
+        </option>
+      `;
+
+
+      campanhas.forEach(campanha => {
+
+        const option =
+          document.createElement('option');
+
+        option.value =
+          campanha.id;
+
+        option.textContent =
+          campanha.nome;
+
+        if (
+          campanhaAtiva &&
+          String(campanhaAtiva.id) ===
+          String(campanha.id)
+        ) {
+
+          option.selected = true;
+
+        }
+
+        seletor.appendChild(option);
+
+      });
+
+
+      if (campanhaAtiva) {
+
+        aviso.style.display =
+          'none';
+
+      } else {
+
+        aviso.style.display =
+          'block';
+
+      }
+
+
+      carregarCampanhaSidebar();
+
+    }
+
+
+    function selecionarCampanhaFicha(id) {
+
+      if (!id) {
+
+        campanhaAtiva = null;
+
+        localStorage.removeItem(
+          'openrpg_campanha_ativa'
+        );
+
+        parametros = [];
+
+        fichas = [];
+
+        fichaEditando = null;
+
+        fecharEditor();
+
+        renderSeletorCampanha();
+
+        renderParametros();
+
+        renderFichas();
+
+        return;
+
+      }
+
+
+      const campanha =
+        campanhas.find(
+          campanha =>
+            String(campanha.id) ===
+            String(id)
+        );
+
+
+      if (!campanha) {
+        return;
+      }
+
+
+      campanhaAtiva =
+        campanha;
+
+
+      localStorage.setItem(
+        'openrpg_campanha_ativa',
+        JSON.stringify(campanhaAtiva)
+      );
+
+
+      fichaEditando = null;
+
+      fecharEditor();
+
+      carregarDados();
+
+      renderSeletorCampanha();
+
+      renderParametros();
+
+      renderFichas();
+
+    }
+
+
+    /* ==================================================
+       DADOS
+    ================================================== */
+
+    let parametros = [];
+
+    let fichas = [];
+
+    let fichaEditando = null;
+
+
+    function carregarDados() {
+
+      if (!campanhaAtiva) {
+
+        parametros = [];
+
+        fichas = [];
+
+        return;
+
+      }
+
+
+      parametros =
+        JSON.parse(
+          localStorage.getItem(
+            `openrpg_parametros_${campanhaAtiva.id}`
+          ) || '[]'
+        );
+
+
+      fichas =
+        JSON.parse(
+          localStorage.getItem(
+            `openrpg_fichas_${campanhaAtiva.id}`
+          ) || '[]'
+        );
+
+    }
+
+
+    function salvarDados() {
+
+      if (!campanhaAtiva) {
+        return;
+      }
+
+
+      localStorage.setItem(
+        `openrpg_parametros_${campanhaAtiva.id}`,
+        JSON.stringify(parametros)
+      );
+
+
+      localStorage.setItem(
+        `openrpg_fichas_${campanhaAtiva.id}`,
+        JSON.stringify(fichas)
+      );
+
+    }
+
+
+    /* ==================================================
+       CRIAR PARÂMETRO
+    ================================================== */
+
+    function criarParametro() {
+
+      if (!campanhaAtiva) {
+
+        alert(
+          'Selecione uma campanha primeiro.'
+        );
+
+        return;
+
+      }
+
+
+      const input =
+        document.getElementById(
+          'nome-parametro'
+        );
+
+
+      const nome =
+        input.value.trim();
+
+
+      const tipo =
+        document.getElementById(
+          'tipo-parametro'
+        ).value;
+
+
+      if (!nome) {
+
+        alert(
+          'Digite o nome do parâmetro.'
+        );
+
+        return;
+
+      }
+
+
+      const parametro = {
+
+        id: Date.now(),
+
+        nome: nome,
+
+        tipo: tipo
+
+      };
+
+
+      parametros.push(parametro);
+
+
+      fichas.forEach(ficha => {
+
+        if (!ficha.dados) {
+          ficha.dados = {};
+        }
+
+        ficha.dados[parametro.id] = '';
+
+      });
+
+
+      salvarDados();
+
+
+      input.value = '';
+
+
+      renderParametros();
+
+      renderFichas();
+
+    }
+
+
+    /* ==================================================
+       EXCLUIR PARÂMETRO
+    ================================================== */
+
+    function excluirParametro(id) {
+
+      parametros =
+        parametros.filter(
+          parametro =>
+            parametro.id !== id
+        );
+
+
+      fichas.forEach(ficha => {
+
+        if (ficha.dados) {
+
+          delete ficha.dados[id];
+
+        }
+
+      });
+
+
+      salvarDados();
+
+
+      renderParametros();
+
+      renderFichas();
+
+    }
+
+
+    /* ==================================================
+       MOSTRAR PARÂMETROS
+    ================================================== */
+
+    function renderParametros() {
+
+      const lista =
+        document.getElementById(
+          'lista-parametros'
+        );
+
+
+      if (!campanhaAtiva) {
+
+        lista.innerHTML =
+          '<p class="empty-message">Selecione uma campanha para visualizar os parâmetros.</p>';
+
+        return;
+
+      }
+
+
+      if (parametros.length === 0) {
+
+        lista.innerHTML =
+          '<p class="empty-message">Nenhum parâmetro criado.</p>';
+
+        return;
+
+      }
+
+
+      lista.innerHTML =
+        parametros.map(parametro => `
+
+          <div
+            class="player-item"
+            style="
+              margin-bottom:8px;
+            "
+          >
+
+            <div>
+
+              <strong>
+                ${escapeHTML(parametro.nome)}
+              </strong>
+
+
+              <span
+                style="
+                  color:var(--text-muted);
+                  margin-left:10px;
+                "
+              >
+
+                ${
+                  parametro.tipo === 'number'
+                    ? 'Número'
+                    : 'Texto'
+                }
+
+              </span>
+
+            </div>
+
+
+            <button
+              class="btn-danger"
+              onclick="excluirParametro(${parametro.id})"
+            >
+              ✕
+            </button>
+
+          </div>
+
+        `).join('');
+
+    }
+
+
+    /* ==================================================
+       CRIAR FICHA
+    ================================================== */
+
+    function criarFicha() {
+
+      if (!campanhaAtiva) {
+
+        alert(
+          'Selecione uma campanha primeiro.'
+        );
+
+        return;
+
+      }
+
+
+      if (parametros.length === 0) {
+
+        alert(
+          'Crie pelo menos um parâmetro antes de criar uma ficha.'
+        );
+
+        return;
+
+      }
+
+
+      const input =
+        document.getElementById(
+          'nome-jogador'
+        );
+
+
+      const jogador =
+        input.value.trim();
+
+
+      if (!jogador) {
+
+        alert(
+          'Digite o nome do jogador.'
+        );
+
+        return;
+
+      }
+
+
+      const dados = {};
+
+
+      parametros.forEach(parametro => {
+
+        dados[parametro.id] = '';
+
+      });
+
+
+      const ficha = {
+
+        id: Date.now(),
+
+        jogador: jogador,
+
+        dados: dados
+
+      };
+
+
+      fichas.push(ficha);
+
+
+      salvarDados();
+
+
+      input.value = '';
+
+
+      renderFichas();
+
+    }
+
+
+    /* ==================================================
+       MOSTRAR FICHAS
+    ================================================== */
+
+    function renderFichas() {
+
+      const lista =
+        document.getElementById(
+          'lista-fichas'
+        );
+
+
+      if (!campanhaAtiva) {
+
+        lista.innerHTML =
+          '<p class="empty-message">Selecione uma campanha para visualizar as fichas.</p>';
+
+        return;
+
+      }
+
+
+      if (fichas.length === 0) {
+
+        lista.innerHTML =
+          '<p class="empty-message">Nenhuma ficha salva.</p>';
+
+        return;
+
+      }
+
+
+      lista.innerHTML =
+        fichas.map(ficha => `
+
+          <div
+            class="player-item"
+            style="
+              margin-bottom:10px;
+              gap:10px;
+              flex-wrap:wrap;
+            "
+          >
+
+            <div>
+
+              📄
+
+              <strong>
+                ${escapeHTML(ficha.jogador)}
+              </strong>
+
+
+              <div
+                style="
+                  color:var(--text-muted);
+                  font-size:12px;
+                  margin-top:4px;
+                "
+              >
+
+                Campanha:
+                ${escapeHTML(campanhaAtiva.nome)}
+
+              </div>
+
+            </div>
+
+
+            <div
+              style="
+                display:flex;
+                gap:8px;
+              "
+            >
+
+              <button
+                class="btn-copy"
+                onclick="editarFicha(${ficha.id})"
+              >
+                ✏️ Modificar
+              </button>
+
+
+              <button
+                class="btn-danger"
+                onclick="excluirFichaPorId(${ficha.id})"
+              >
+                🗑️
+              </button>
+
+            </div>
+
+          </div>
+
+        `).join('');
+
+    }
+
+
+    /* ==================================================
+       EDITAR FICHA
+    ================================================== */
+
+    function editarFicha(id) {
+
+      const ficha =
+        fichas.find(
+          f => f.id === id
+        );
+
+
+      if (!ficha) {
+        return;
+      }
+
+
+      fichaEditando =
+        ficha;
+
+
+      if (!ficha.dados) {
+        ficha.dados = {};
+      }
+
+
+      const editor =
+        document.getElementById(
+          'ficha-editor'
+        );
+
+
+      const campos =
+        document.getElementById(
+          'campos-ficha'
+        );
+
+
+      campos.innerHTML = `
+
+        <h3>
+          👤 ${escapeHTML(ficha.jogador)}
+        </h3>
+
+      `;
+
+
+      parametros.forEach(parametro => {
+
+        if (
+          ficha.dados[parametro.id] ===
+          undefined
+        ) {
+
+          ficha.dados[parametro.id] = '';
+
+        }
+
+
+        const valor =
+          ficha.dados[parametro.id] ?? '';
+
+
+        campos.innerHTML += `
+
+          <div
+            style="
+              margin-top:15px;
+            "
+          >
+
+            <label>
+              ${escapeHTML(parametro.nome)}
+            </label>
+
+
+            <input
+              id="campo-${parametro.id}"
+              type="${parametro.tipo}"
+              value="${escapeHTML(valor)}"
+            >
+
+          </div>
+
+        `;
+
+      });
+
+
+      editor.style.display =
+        'block';
+
+
+      editor.scrollIntoView({
+        behavior: 'smooth'
+      });
+
+    }
+
+
+    /* ==================================================
+       SALVAR ALTERAÇÕES
+    ================================================== */
+
+    function salvarFicha() {
+
+      if (!fichaEditando) {
+        return;
+      }
+
+
+      if (!fichaEditando.dados) {
+        fichaEditando.dados = {};
+      }
+
+
+      parametros.forEach(parametro => {
+
+        const campo =
+          document.getElementById(
+            `campo-${parametro.id}`
+          );
+
+
+        if (campo) {
+
+          fichaEditando.dados[parametro.id] =
+            campo.value;
+
+        }
+
+      });
+
+
+      salvarDados();
+
+
+      renderFichas();
+
+
+      alert(
+        'Ficha modificada e salva com sucesso!'
+      );
+
+    }
+
+
+    /* ==================================================
+       EXCLUIR FICHA
+    ================================================== */
+
+    function excluirFichaPorId(id) {
+
+      const ficha =
+        fichas.find(
+          f => f.id === id
+        );
+
+
+      if (!ficha) {
+        return;
+      }
+
+
+      const confirmar =
+        confirm(
+          `Deseja realmente excluir a ficha de ${ficha.jogador}?`
+        );
+
+
+      if (!confirmar) {
+        return;
+      }
+
+
+      fichas =
+        fichas.filter(
+          f => f.id !== id
+        );
+
+
+      if (
+        fichaEditando &&
+        fichaEditando.id === id
+      ) {
+
+        fichaEditando = null;
+
+        fecharEditor();
+
+      }
+
+
+      salvarDados();
+
+      renderFichas();
+
+    }
+
+
+    function excluirFicha() {
+
+      if (!fichaEditando) {
+        return;
+      }
+
+
+      excluirFichaPorId(
+        fichaEditando.id
+      );
+
+    }
+
+
+    /* ==================================================
+       FECHAR EDITOR
+    ================================================== */
+
+    function fecharEditor() {
+
+      const editor =
+        document.getElementById(
+          'ficha-editor'
+        );
+
+
+      if (editor) {
+
+        editor.style.display =
+          'none';
+
+      }
+
+
+      fichaEditando = null;
+
+    }
+
+
+    /* ==================================================
+       ESCAPAR HTML
+    ================================================== */
+
+    function escapeHTML(texto) {
+
+      const div =
+        document.createElement('div');
+
+      div.textContent =
+        texto == null
+          ? ''
+          : String(texto);
+
+      return div.innerHTML;
+
+    }
+
+
+    /* ==================================================
+       INICIALIZAÇÃO
+    ================================================== */
+
+    window.onload = function () {
+
+      aplicarEstadoSidebar();
+
+      carregarCampanhas();
+
+      renderSeletorCampanha();
+
+      carregarDados();
+
+      renderParametros();
+
+      renderFichas();
+
+      carregarCampanhaSidebar();
+
+    };
+
+  </script>
+
+</body>
+
+</html>
