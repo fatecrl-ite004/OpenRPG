@@ -272,7 +272,76 @@ button:hover {
     background: var(--info-hover);
 }
 
-/* Character List */
+/* Minimalist Combat Creation Bar */
+.combat-bar {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    margin-bottom: 20px;
+}
+
+.combat-bar-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.combat-bar-inputs input {
+    height: 35px;
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+.c-inp-name {
+    flex: 2 1 180px;
+    min-width: 140px;
+}
+
+.c-inp-num {
+    width: 65px;
+    flex: 0 1 65px;
+    text-align: center;
+}
+
+.c-inp-weapon {
+    flex: 1 1 110px;
+    min-width: 85px;
+}
+
+.c-btn-add {
+    height: 35px;
+    padding: 0 14px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.empty-combat-state {
+    text-align: center;
+    padding: 42px 20px;
+    background: var(--bg-panel);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.empty-combat-icon {
+    font-size: 38px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.empty-combat-state h3 {
+    font-size: 16px;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.empty-combat-state p {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
 #lista {
     display: flex;
     flex-direction: column;
@@ -287,40 +356,170 @@ button:hover {
     box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
+    transition: border-color .15s;
+}
+
+.char-card:hover {
+    border-color: rgba(59, 130, 246, 0.45);
+}
+
+.char-card.is-defeated {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.05) 0%, var(--bg-panel) 100%);
+    opacity: 0.85;
 }
 
 .char-header {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
-    gap: 10px;
+    display: flex;
     align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-.char-header > input:first-child {
-    font-weight: 600;
+.char-rank-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.char-name-container {
+    flex: 2 1 180px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.char-name-input {
+    flex: 1;
+    font-weight: 700;
     font-size: 15px;
 }
 
-.stat-box {
+.status-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+
+.status-active {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-defeated {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.char-stats-row {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 500;
+    gap: 8px;
+    flex: 3 1 340px;
+    flex-wrap: wrap;
+}
+
+.stat-box {
+    flex: 1 1 70px;
+    min-width: 70px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 6px 8px;
+    text-align: center;
+}
+
+.stat-tag {
+    font-size: 11px;
+    font-weight: 600;
     color: var(--text-muted);
 }
 
 .stat-box input {
     width: 100%;
     text-align: center;
+    padding: 5px 4px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.stat-box.stat-hp {
+    border-color: rgba(239, 68, 68, 0.35);
+}
+.stat-box.stat-hp input {
+    color: #f87171;
+}
+
+.stat-box.stat-pain {
+    border-color: rgba(245, 158, 11, 0.35);
+}
+.stat-box.stat-pain input {
+    color: #fbbf24;
+}
+
+.stat-box.stat-inic {
+    border-color: rgba(59, 130, 246, 0.35);
+}
+.stat-box.stat-inic input {
+    color: #60a5fa;
 }
 
 .char-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    margin-left: auto;
 }
 
+.char-actions button {
+    padding: 7px 12px;
+    font-size: 12px;
+}
+
+/* Health Bar */
+.health-track {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-input);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.health-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width .25s ease, background-color .25s ease;
+}
+
+.health-high {
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.health-mid {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.health-low {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+/* Weapons Grid */
 .weapons-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -339,17 +538,49 @@ button:hover {
     gap: 8px;
 }
 
-.weapon-box input {
-    width: 100%;
+.weapon-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.weapon-stat-row {
+.weapon-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-subtle);
+}
+
+.weapon-title-input {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 8px;
+}
+
+.weapon-stats-strip {
     display: grid;
-    grid-template-columns: 70px 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 6px;
-    align-items: center;
-    font-size: 12px;
+}
+
+.weapon-stat-unit {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: center;
+}
+
+.weapon-unit-label {
+    font-size: 10px;
+    font-weight: 600;
     color: var(--text-muted);
+}
+
+.weapon-stat-unit input {
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    padding: 4px 2px;
+    font-weight: 600;
 }
 
 /* Master Panel */
@@ -559,8 +790,12 @@ button:hover {
     .mestre-grid {
         grid-template-columns: 1fr;
     }
-    .char-header {
-        grid-template-columns: 1fr 1fr;
+    .char-stats-row {
+        width: 100%;
+    }
+    .char-actions {
+        width: 100%;
+        justify-content: flex-end;
     }
     .weapons-grid {
         grid-template-columns: 1fr;
