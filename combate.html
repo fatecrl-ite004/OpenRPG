@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenRPG - Controle de Sessão</title>
+  <title>OpenRPG - Simulação de Combate</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-container">
     
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar collapsed">
+    <aside id="sidebar" class="sidebar">
       <div class="brand">
         <button class="btn-toggle-sidebar" onclick="toggleSidebar()" title="Recolher menu lateral">◀</button>
         <img src="img/icon.webp" alt="OpenRPG" class="brand-icon">
@@ -22,7 +22,7 @@
           🏠 Início
         </a>
         <a id="btn-tab-sessao" class="nav-btn active" href="combate.html">
-          ⚔️ Sessão / Combate
+          ⚔️ Simulação de Combate
         </a>
         <a id="btn-tab-mestre" class="nav-btn" href="mestre.html">
           👑 Painel do Mestre
@@ -32,246 +32,825 @@
         </a>
       </nav>
     </aside>
+    <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
     <!-- Main Content -->
     <main class="main-content">
-      <button class="btn-open-sidebar" onclick="toggleSidebar()">
-        ☰ Abrir Menu
-      </button>
       
-      <!-- Session & Combat -->
-      <section class="section-container">
-        <div class="section-header">
-          <h2>⚔️ Controle de Sessão & Combate</h2>
-          <p>Gerencie a iniciativa, vida, dor e munições dos personagens em combate.</p>
-        </div>
-
-        <div class="combat-bar">
-          <div class="form-grid combat-bar-inputs">
-            <input id="nome" class="c-inp-name" placeholder="Nome do Personagem / Inimigo">
-            <input id="vida" type="number" class="c-inp-num" placeholder="Vida">
-            <input id="inic" type="number" class="c-inp-num" placeholder="Inic">
-            <input id="dor" type="number" class="c-inp-num" placeholder="Dor">
-            <input id="arma1" class="c-inp-weapon" placeholder="Arma 1">
-            <input id="arma2" class="c-inp-weapon" placeholder="Arma 2">
-            <input id="arma3" class="c-inp-weapon" placeholder="Arma 3">
-            <button onclick="adicionar()" class="btn-success c-btn-add">+ Adicionar</button>
+      <!-- Top Bar -->
+      <header class="top-nav-bar">
+        <div class="top-nav-left">
+          <button class="btn-sidebar-toggle" onclick="toggleSidebar()" title="Abrir ou fechar menu lateral">
+            ☰ Menu
+          </button>
+          <div class="top-page-badge">
+            ⚔️ Simulação de Combate
           </div>
         </div>
+        <div class="top-nav-right">
+          <div id="top-camp-indicator" class="top-camp-pill" style="display: none;"></div>
+          <button class="btn-settings" onclick="abrirConfiguracoes()" title="Configurações do sistema">
+            ⚙️ <span class="btn-settings-text">Configurações</span>
+          </button>
+        </div>
+      </header>
 
-        <div id="lista"></div>
+      <!-- Combat Simulation Rework -->
+      <section class="section-container">
+        
+        <div class="section-header">
+          <h2>⚔️ Simulação de Combate</h2>
+          <p>
+            Controle tático de turnos, iniciativa, dano rápido e condições de status para os combates da sessão ativa.
+          </p>
+        </div>
+
+        <div class="combat-layout">
+          
+          <!-- LEFT SIDEBAR: Recruitment & Fast Add -->
+          <div class="combat-sidebar">
+            
+            <!-- 1. Mini Box: Jogadores da Campanha -->
+            <div class="roster-card">
+              <div class="roster-header">
+                <h4>👥 Jogadores da Campanha</h4>
+                <button onclick="adicionarTodosJogadores()" class="btn-roster-add" title="Adicionar todos os jogadores de uma vez">+ Todos</button>
+              </div>
+              <p style="font-size: 11px; color: var(--text-subtle); margin-bottom: 8px;">
+                Fichas cadastradas na campanha ativa:
+              </p>
+              <div id="campaign-roster-list" class="roster-list">
+                <!-- Preenchido via JavaScript -->
+              </div>
+            </div>
+
+            <!-- 2. Fast Add Inimigo / NPC -->
+            <div class="enemy-add-box">
+              <h4>👹 Inserir Inimigo / NPC</h4>
+              <div class="enemy-form">
+                <input id="fast-nome" placeholder="Nome (ex: Goblin, Bandido, Cultista)">
+                <div class="enemy-form-row">
+                  <input id="fast-vida" type="number" placeholder="HP Máx (ex: 22)" style="flex: 1;">
+                  <input id="fast-inic" type="number" placeholder="Iniciativa" style="width: 80px;">
+                  <button type="button" class="btn-secondary" onclick="rolarInicFast()" title="Rolar 1d20 para iniciativa" style="padding: 0 8px;">🎲</button>
+                </div>
+                <div class="enemy-form-row">
+                  <select id="fast-faccao" style="flex: 1;">
+                    <option value="enemy">Inimigo</option>
+                    <option value="ally">Aliado</option>
+                    <option value="player">Jogador</option>
+                  </select>
+                  <input id="fast-ca" type="number" placeholder="CA (Defesa)" style="width: 90px;">
+                </div>
+                <input id="fast-nota" placeholder="Ataques / Notas rápidas (opcional)">
+                <button onclick="adicionarCombatenteManual()" class="btn-success" style="width: 100%; margin-top: 4px;">
+                  + Inserir Combatente
+                </button>
+              </div>
+            </div>
+
+            <!-- 3. Controles Gerais do Encontro -->
+            <div class="roster-card">
+              <div class="roster-header">
+                <h4>⚙️ Ações do Encontro</h4>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button onclick="rolarIniciativaGeral()" class="btn-secondary" style="justify-content: flex-start;">
+                  🎲 Rolar Iniciativas Faltantes
+                </button>
+                <button onclick="reordenarPorIniciativa()" class="btn-secondary" style="justify-content: flex-start;">
+                  ↕️ Reordenar por Iniciativa
+                </button>
+                <button onclick="resetarRodadas()" class="btn-secondary" style="justify-content: flex-start;">
+                  🔄 Reiniciar para Rodada 1
+                </button>
+                <button onclick="limparCombate()" class="btn-danger" style="justify-content: flex-start; margin-top: 4px;">
+                  🗑️ Limpar Todo o Combate
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT MAIN: Turn Commander & Initiative Track -->
+          <div>
+            
+            <!-- Turn Commander Bar -->
+            <div class="turn-commander">
+              <div class="round-indicator">
+                <span id="display-rodada" class="round-tag">RODADA 1</span>
+                <div id="display-vez" style="font-size: 13.5px; color: var(--text-main); font-weight: 600;">
+                  <!-- Turno Atual -->
+                </div>
+              </div>
+              <div class="commander-actions">
+                <button onclick="turnoAnterior()" class="btn-commander btn-secondary" title="Retornar ao combatente anterior">
+                  ◀ Turno Anterior
+                </button>
+                <button onclick="proximoTurno()" class="btn-commander btn-next-turn" title="Passar para o próximo combatente">
+                  Próximo Turno ▶
+                </button>
+              </div>
+            </div>
+
+            <!-- Tactical Initiative Track -->
+            <div id="combat-track-list" class="combat-track">
+              <!-- Combatentes renderizados via JS -->
+            </div>
+
+          </div>
+
+        </div>
+
       </section>
 
     </main>
+  </div>
+
+  <!-- Modal de Configurações -->
+  <div id="settings-modal" class="modal-overlay" onclick="fecharConfiguracoesPorFora(event)">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>⚙️ Configurações</h3>
+        <button class="btn-close-modal" onclick="fecharConfiguracoes()">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Opção 1: Tema -->
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-section-title">🎨 Tema Visual</span>
+            <span class="settings-badge">Em breve</span>
+          </div>
+          <p class="settings-desc">Personalização da paleta visual da interface para diferentes cenários de jogo.</p>
+          <div class="theme-preview-grid">
+            <div class="theme-card-option current">
+              <strong>🌑 Dark Obsidian</strong>
+              <span>Tema escuro focado em contraste e clareza (Ativo)</span>
+            </div>
+            <div class="theme-card-option">
+              <strong>📜 Pergaminho Fantasia</strong>
+              <span>Tons terrosos e estética de tomo medieval</span>
+            </div>
+            <div class="theme-card-option">
+              <strong>🌆 Cyberpunk Night</strong>
+              <span>Tons de azul profundo e detalhes ciberpunk</span>
+            </div>
+            <div class="theme-card-option">
+              <strong>⚔️ Grimdark Monocromo</strong>
+              <span>Cinza e grafite com alto foco funcional</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opção 2: Acessibilidade -->
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-section-title">♿ Opções de Acessibilidade</span>
+            <span class="settings-badge planned">Planejado</span>
+          </div>
+          <p class="settings-desc">Recursos pensados para tornar a experiência de mestrar e jogar mais inclusiva e acessível:</p>
+          <div class="a11y-list">
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>🔠 Ajuste da Escala de Texto</strong>
+                <span>Amplie o tamanho das fontes (Normal, Médio, Grande) para leitura confortável na mesa</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>👁️ Modo de Alto Contraste</strong>
+                <span>Realce de bordas e tipografia reforçada para pessoas com baixa visão</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>📖 Fonte Especial para Dislexia</strong>
+                <span>Alternar para a tipografia OpenDyslexic / Lexend facilitando a leitura rápida</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>🛑 Redução de Animações</strong>
+                <span>Desativa transições bruscas de acordo com a preferência do sistema operacional</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>🔊 Feedback Sonoro de Dados</strong>
+                <span>Sons discretos ao rolar e anúncio do resultado para leitores de tela</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>⌨️ Atalhos Rápidos de Teclado</strong>
+                <span>Navegação sem mouse para turnos, rolagem e gerenciamento de combate</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opção 3: Exportar JSON -->
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-section-title">💾 Backup da Campanha</span>
+            <span class="settings-badge">Em breve</span>
+          </div>
+          <p class="settings-desc">Exportação e importação de dados da campanha para portabilidade e segurança.</p>
+          <div class="export-box">
+            <div>
+              <strong style="font-size: 13px; color: var(--text-main);">Exportar JSON Geral da Campanha Ativa</strong>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                Gera um arquivo compacto com fichas, anotações e parâmetros salvos.
+              </div>
+            </div>
+            <button class="btn-secondary" style="opacity: 0.6; cursor: not-allowed;" title="Funcionalidade em desenvolvimento">
+              📥 Baixar JSON (Em breve)
+            </button>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="fecharConfiguracoes()">Fechar</button>
+      </div>
+    </div>
   </div>
 
   <script>
     // State
     const campAtiva = JSON.parse(localStorage.getItem('openrpg_campanha_ativa') || 'null');
     const campKey = campAtiva ? `_${campAtiva.id}` : '';
-    let personagens = JSON.parse(localStorage.getItem(`openrpg_personagens${campKey}`) || '[]');
+
+    let combatState = carregarEstadoCombate();
+
+    function escapeHTML(texto) {
+      const div = document.createElement('div');
+      div.textContent = texto == null ? '' : String(texto);
+      return div.innerHTML;
+    }
 
     // Sidebar Toggle
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (!sidebar) return;
+
       const isCollapsed = sidebar.classList.toggle('collapsed');
-      localStorage.setItem('openrpg_sidebar_collapsed', isCollapsed);
+      if (backdrop) {
+        if (!isCollapsed && window.innerWidth <= 960) {
+          backdrop.classList.add('active');
+        } else {
+          backdrop.classList.remove('active');
+        }
+      }
+      localStorage.setItem('openrpg_sidebar_collapsed', isCollapsed ? 'true' : 'false');
     }
 
     function aplicarEstadoSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (!sidebar) return;
+
       const saved = localStorage.getItem('openrpg_sidebar_collapsed');
       if (saved !== null) {
-        document.getElementById('sidebar').classList.toggle('collapsed', saved === 'true');
+        sidebar.classList.toggle('collapsed', saved === 'true');
+      } else {
+        const defaultCollapsed = window.innerWidth <= 960;
+        sidebar.classList.toggle('collapsed', defaultCollapsed);
+      }
+      if (backdrop) {
+        backdrop.classList.remove('active');
       }
     }
 
     function carregarCampanhaSidebar() {
-      const el = document.getElementById('sidebar-campanha');
+      const elSidebar = document.getElementById('sidebar-campanha');
+      const elTop = document.getElementById('top-camp-indicator');
+
       if (campAtiva && campAtiva.nome) {
-        el.innerHTML = `<span class="camp-tag">🎲 ${campAtiva.nome}</span>`;
+        if (elSidebar) elSidebar.innerHTML = `<span class="camp-tag">🎲 ${escapeHTML(campAtiva.nome)}</span>`;
+        if (elTop) {
+          elTop.style.display = 'inline-flex';
+          elTop.style.borderColor = 'var(--border-color)';
+          elTop.innerHTML = `🎲 ${escapeHTML(campAtiva.nome)}`;
+        }
       } else {
-        el.innerHTML = `<a href="index.html" class="camp-tag" style="text-decoration:none; border-color: var(--danger); color: var(--danger);">⚠️ Selecionar Campanha</a>`;
+        if (elSidebar) elSidebar.innerHTML = `<a href="index.html" class="camp-tag" style="text-decoration:none; border-color: var(--danger); color: var(--danger);">⚠️ Selecionar Campanha</a>`;
+        if (elTop) {
+          elTop.style.display = 'inline-flex';
+          elTop.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+          elTop.innerHTML = `<a href="index.html" style="color: var(--danger); text-decoration: none;">⚠️ Nenhuma Campanha Ativa</a>`;
+        }
       }
     }
 
-    // Combat
-    function salvarCombate() {
-      localStorage.setItem(`openrpg_personagens${campKey}`, JSON.stringify(personagens));
-    }
-
-    function adicionar() {
-      const nome = document.getElementById('nome').value || 'Sem Nome';
-      const vida = parseInt(document.getElementById('vida').value) || 0;
-      const inic = parseInt(document.getElementById('inic').value) || 0;
-      const dor = parseInt(document.getElementById('dor').value) || 0;
-      const arma1 = document.getElementById('arma1').value || 'Arma 1';
-      const arma2 = document.getElementById('arma2').value || 'Arma 2';
-      const arma3 = document.getElementById('arma3').value || 'Arma 3';
-
-      personagens.push({
-        nome,
-        vidaAtual: vida,
-        vidaMax: vida,
-        inic,
-        dor,
-        arma1, arma2, arma3,
-        muni1: 0, max1: 0, lim1: 0,
-        muni2: 0, max2: 0, lim2: 0,
-        muni3: 0, max3: 0, lim3: 0
-      });
-
-      salvarCombate();
-      renderCombate();
-      document.querySelectorAll('.form-grid input').forEach(i => i.value = '');
-    }
-
-    function editarTexto(i, campo, valor) {
-      personagens[i][campo] = valor;
-      salvarCombate();
-    }
-
-    function atualizarVida(input, i) {
-      const val = parseInt(input.value) || 0;
-      personagens[i].vidaAtual = val;
-      salvarCombate();
-      const card = input.closest('.char-card');
-      if (!card) return;
-      const max = personagens[i].vidaMax || 1;
-      const pct = max > 0 ? Math.max(0, Math.min(100, Math.round((val / max) * 100))) : 0;
-      const isDead = val <= 0;
-      card.classList.toggle('is-defeated', isDead);
-      const pill = card.querySelector('.status-pill');
-      if (pill) {
-        pill.className = `status-pill ${isDead ? 'status-defeated' : 'status-active'}`;
-        pill.textContent = isDead ? '💀 Caído' : '⚔️ Ativo';
+    // Storage and State
+    function carregarEstadoCombate() {
+      if (!campAtiva) {
+        return {
+          rodada: 1,
+          turnoAtual: 0,
+          combatentes: []
+        };
       }
-      const bar = card.querySelector('.health-fill');
-      if (bar) {
-        bar.style.width = pct + '%';
-        bar.className = `health-fill ${pct > 50 ? 'health-high' : pct > 20 ? 'health-mid' : 'health-low'}`;
+
+      const salvo = localStorage.getItem(`openrpg_combat_sim_${campAtiva.id}`);
+      if (salvo) {
+        try {
+          return JSON.parse(salvo);
+        } catch(e) {}
       }
-    }
 
-    function editarNumero(i, campo, valor) {
-      personagens[i][campo] = parseInt(valor) || 0;
-      salvarCombate();
-      if (campo === 'vidaAtual' || campo === 'vidaMax' || campo === 'inic') {
-        renderCombate();
+      // Migração de estado legado se existir para a campanha ativa
+      const legado = JSON.parse(localStorage.getItem(`openrpg_personagens_${campAtiva.id}`) || '[]');
+      if (legado.length > 0) {
+        return {
+          rodada: 1,
+          turnoAtual: 0,
+          combatentes: legado.map(p => ({
+            id: Date.now() + Math.random(),
+            nome: p.nome || 'Combatente',
+            faccao: 'enemy',
+            vidaAtual: p.vidaAtual || 20,
+            vidaMax: p.vidaMax || 20,
+            inic: p.inic || 10,
+            ca: 10,
+            condicoes: [],
+            notas: p.arma1 ? `Armas: ${p.arma1}` : ''
+          }))
+        };
       }
+
+      return {
+        rodada: 1,
+        turnoAtual: 0,
+        combatentes: []
+      };
     }
 
-    function duplicar(i) {
-      personagens.push({ ...personagens[i], nome: personagens[i].nome + ' (Cópia)' });
-      salvarCombate();
-      renderCombate();
+    function salvarEstadoCombate() {
+      if (!campAtiva) return;
+      localStorage.setItem(`openrpg_combat_sim_${campAtiva.id}`, JSON.stringify(combatState));
+      localStorage.setItem(`openrpg_personagens_${campAtiva.id}`, JSON.stringify(combatState.combatentes));
     }
 
-    function remover(i) {
-      personagens.splice(i, 1);
-      salvarCombate();
-      renderCombate();
-    }
-
-    function renderCombate() {
-      personagens.sort((a, b) => b.inic - a.inic);
-      const lista = document.getElementById('lista');
-      lista.innerHTML = '';
-
-      if (personagens.length === 0) {
-        lista.innerHTML = `
-          <div class="empty-combat-state">
-            <span class="empty-combat-icon">🛡️</span>
-            <h3>Nenhum combatente ativo</h3>
-            <p>Cadastre heróis ou inimigos acima para acompanhar os turnos e a vida durante a sessão.</p>
+    // Roster da Campanha (Pequena tela de jogadores)
+    function renderRosterCampanha() {
+      const listaEl = document.getElementById('campaign-roster-list');
+      if (!campAtiva) {
+        listaEl.innerHTML = `
+          <div style="font-size: 11.5px; color: var(--danger); padding: 8px 0;">
+            ⚠️ Nenhuma campanha ativa selecionada. <a href="index.html" style="color: var(--accent);">Selecione no Início</a>.
           </div>
         `;
         return;
       }
 
-      personagens.forEach((p, i) => {
-        const vidaPct = p.vidaMax > 0 ? Math.max(0, Math.min(100, Math.round((p.vidaAtual / p.vidaMax) * 100))) : (p.vidaAtual > 0 ? 100 : 0);
-        const isDefeated = p.vidaAtual <= 0;
-        const healthLevel = vidaPct > 50 ? 'health-high' : (vidaPct > 20 ? 'health-mid' : 'health-low');
+      const fichas = JSON.parse(localStorage.getItem(`openrpg_fichas_${campAtiva.id}`) || '[]');
 
-        lista.innerHTML += `
-          <div class="char-card ${isDefeated ? 'is-defeated' : ''}">
-            <div class="char-header">
-              <div class="char-rank-badge" title="Posição na Iniciativa">#${i + 1}</div>
-              <div class="char-name-container">
-                <input class="char-name-input" value="${p.nome}" onchange="editarTexto(${i}, 'nome', this.value)" placeholder="Nome">
-                <span class="status-pill ${isDefeated ? 'status-defeated' : 'status-active'}">
-                  ${isDefeated ? '💀 Caído' : '⚔️ Ativo'}
-                </span>
-              </div>
-              <div class="char-stats-row">
-                <div class="stat-box stat-hp" title="Vida Atual">
-                  <span class="stat-tag">🩸 Atual</span>
-                  <input type="number" value="${p.vidaAtual}" oninput="atualizarVida(this, ${i})" onchange="editarNumero(${i}, 'vidaAtual', this.value)">
-                </div>
-                <div class="stat-box stat-max" title="Vida Máxima">
-                  <span class="stat-tag">🫀 Máx</span>
-                  <input type="number" value="${p.vidaMax}" onchange="editarNumero(${i}, 'vidaMax', this.value)">
-                </div>
-                <div class="stat-box stat-pain" title="Pontos de Dor">
-                  <span class="stat-tag">💢 Dor</span>
-                  <input type="number" value="${p.dor}" onchange="editarNumero(${i}, 'dor', this.value)">
-                </div>
-                <div class="stat-box stat-inic" title="Iniciativa">
-                  <span class="stat-tag">🎯 Inic</span>
-                  <input type="number" value="${p.inic}" onchange="editarNumero(${i}, 'inic', this.value)">
-                </div>
-              </div>
-              <div class="char-actions">
-                <button onclick="duplicar(${i})" class="btn-copy" title="Duplicar combatente">📋 Copiar</button>
-                <button onclick="remover(${i})" class="btn-danger" title="Remover do combate">🗑️ Remover</button>
-              </div>
-            </div>
-
-            <div class="health-track" title="Vida: ${p.vidaAtual} / ${p.vidaMax} (${vidaPct}%)">
-              <div class="health-fill ${healthLevel}" style="width: ${vidaPct}%"></div>
-            </div>
-
-            <div class="weapons-grid">
-              ${armaBox(i, p, 'arma1', 'muni1', 'max1', 'lim1', 1)}
-              ${armaBox(i, p, 'arma2', 'muni2', 'max2', 'lim2', 2)}
-              ${armaBox(i, p, 'arma3', 'muni3', 'max3', 'lim3', 3)}
-            </div>
+      if (fichas.length === 0) {
+        listaEl.innerHTML = `
+          <div style="font-size: 11.5px; color: var(--text-subtle); padding: 8px 0; font-style: italic;">
+            Nenhum jogador cadastrado nesta campanha. Cadastre no <a href="mestre.html" style="color:var(--accent);">Painel do Mestre</a>.
           </div>
         `;
-      });
+        return;
+      }
+
+      listaEl.innerHTML = fichas.map(f => {
+        const jaEmCombate = combatState.combatentes.some(c => c.fichaId === f.id || c.nome.toLowerCase() === (f.personagem || f.jogador).toLowerCase());
+        const vidaHp = parseInt(f.vida) > 0 ? f.vida : 20;
+        const inicVal = f.iniciativa ?? 0;
+        const defVal = f.defesa ?? 10;
+
+        return `
+          <div class="roster-item">
+            <div class="roster-item-info">
+              <span class="roster-item-name">🗡️ ${escapeHTML(f.personagem || f.jogador)}</span>
+              <span class="roster-item-meta">${escapeHTML(f.jogador)} • 🩸 ${vidaHp} | 🎯 ${inicVal} | 🛡️ ${defVal}</span>
+            </div>
+            ${jaEmCombate ? `
+              <span class="btn-roster-added">✓ No Combate</span>
+            ` : `
+              <button class="btn-roster-add" onclick="adicionarFichaAoCombate(${f.id})">+ Adicionar</button>
+            `}
+          </div>
+        `;
+      }).join('');
     }
 
-    function armaBox(i, p, a, m, x, l, num = 1) {
-      const icons = ['🗡️', '🔫', '🏹'];
-      const icon = icons[(num - 1) % 3] || '⚔️';
-      return `
-        <div class="weapon-box">
-          <div class="weapon-header">
-            <span class="weapon-label">${icon} Arma ${num}</span>
-            <input class="weapon-title-input" value="${p[a]}" onchange="editarTexto(${i}, '${a}', this.value)" placeholder="Nome da Arma">
-          </div>
-          <div class="weapon-stats-strip">
-            <div class="weapon-stat-unit">
-              <span class="weapon-unit-label">Munição</span>
-              <input type="number" value="${p[m]}" onchange="editarNumero(${i}, '${m}', this.value)">
-            </div>
-            <div class="weapon-stat-unit">
-              <span class="weapon-unit-label">Pente</span>
-              <input type="number" value="${p[x]}" onchange="editarNumero(${i}, '${x}', this.value)">
-            </div>
-            <div class="weapon-stat-unit">
-              <span class="weapon-unit-label">Total</span>
-              <input type="number" value="${p[l]}" onchange="editarNumero(${i}, '${l}', this.value)">
-            </div>
-          </div>
-        </div>
-      `;
+    function adicionarFichaAoCombate(fichaId) {
+      if (!campAtiva) {
+        alert('Selecione uma campanha antes de recrutar combatentes.');
+        return;
+      }
+
+      const fichas = JSON.parse(localStorage.getItem(`openrpg_fichas_${campAtiva.id}`) || '[]');
+      const f = fichas.find(item => item.id === fichaId);
+      if (!f) return;
+
+      const vida = parseInt(f.vida) > 0 ? parseInt(f.vida) : 20;
+      const inic = parseInt(f.iniciativa) || 10;
+      const ca = parseInt(f.defesa) || 10;
+      const mochilaNota = f.mochila ? `Mochila: ${f.mochila}` : '';
+
+      combatState.combatentes.push({
+        id: Date.now() + Math.random(),
+        fichaId: f.id,
+        nome: f.personagem || f.jogador,
+        faccao: 'player',
+        vidaAtual: vida,
+        vidaMax: vida,
+        inic: inic,
+        ca: ca,
+        condicoes: [],
+        notas: mochilaNota || `Jogador: ${f.jogador}`
+      });
+
+      salvarEstadoCombate();
+      renderRosterCampanha();
+      renderCombate();
     }
+
+    function adicionarTodosJogadores() {
+      if (!campAtiva) {
+        alert('Selecione uma campanha antes de recrutar combatentes.');
+        return;
+      }
+
+      const fichas = JSON.parse(localStorage.getItem(`openrpg_fichas_${campAtiva.id}`) || '[]');
+      fichas.forEach(f => {
+        const jaExiste = combatState.combatentes.some(c => c.fichaId === f.id || c.nome.toLowerCase() === (f.personagem || f.jogador).toLowerCase());
+        if (!jaExiste) {
+          const vida = parseInt(f.vida) > 0 ? parseInt(f.vida) : 20;
+          const inic = parseInt(f.iniciativa) || 10;
+          const ca = parseInt(f.defesa) || 10;
+          const mochilaNota = f.mochila ? `Mochila: ${f.mochila}` : '';
+
+          combatState.combatentes.push({
+            id: Date.now() + Math.random(),
+            fichaId: f.id,
+            nome: f.personagem || f.jogador,
+            faccao: 'player',
+            vidaAtual: vida,
+            vidaMax: vida,
+            inic: inic,
+            ca: ca,
+            condicoes: [],
+            notas: mochilaNota || `Jogador: ${f.jogador}`
+          });
+        }
+      });
+
+      salvarEstadoCombate();
+      renderRosterCampanha();
+      renderCombate();
+    }
+
+    // Inserção Manual de Inimigo / NPC
+    function rolarInicFast() {
+      const dado = Math.floor(Math.random() * 20) + 1;
+      document.getElementById('fast-inic').value = dado;
+    }
+
+    function adicionarCombatenteManual() {
+      if (!campAtiva) {
+        alert('Selecione ou crie uma campanha no Início antes de adicionar combatentes.');
+        return;
+      }
+
+      const nomeInput = document.getElementById('fast-nome');
+      const vidaInput = document.getElementById('fast-vida');
+      const inicInput = document.getElementById('fast-inic');
+      const caInput = document.getElementById('fast-ca');
+      const faccaoInput = document.getElementById('fast-faccao');
+      const notaInput = document.getElementById('fast-nota');
+
+      const nome = nomeInput.value.trim() || 'Inimigo';
+      const vida = parseInt(vidaInput.value) || 20;
+      const inic = parseInt(inicInput.value) || Math.floor(Math.random() * 20) + 1;
+      const ca = parseInt(caInput.value) || 10;
+      const faccao = faccaoInput.value || 'enemy';
+      const nota = notaInput.value.trim() || '';
+
+      combatState.combatentes.push({
+        id: Date.now() + Math.random(),
+        nome,
+        faccao,
+        vidaAtual: vida,
+        vidaMax: vida,
+        inic,
+        ca,
+        condicoes: [],
+        notas: nota
+      });
+
+      nomeInput.value = '';
+      vidaInput.value = '';
+      inicInput.value = '';
+      caInput.value = '';
+      notaInput.value = '';
+
+      salvarEstadoCombate();
+      renderCombate();
+    }
+
+    // Turnos e Rodadas
+    function proximoTurno() {
+      if (combatState.combatentes.length === 0) return;
+
+      combatState.turnoAtual++;
+      if (combatState.turnoAtual >= combatState.combatentes.length) {
+        combatState.turnoAtual = 0;
+        combatState.rodada++;
+      }
+
+      salvarEstadoCombate();
+      renderCombate();
+    }
+
+    function turnoAnterior() {
+      if (combatState.combatentes.length === 0) return;
+
+      combatState.turnoAtual--;
+      if (combatState.turnoAtual < 0) {
+        if (combatState.rodada > 1) {
+          combatState.rodada--;
+          combatState.turnoAtual = combatState.combatentes.length - 1;
+        } else {
+          combatState.turnoAtual = 0;
+        }
+      }
+
+      salvarEstadoCombate();
+      renderCombate();
+    }
+
+    function resetarRodadas() {
+      combatState.rodada = 1;
+      combatState.turnoAtual = 0;
+      salvarEstadoCombate();
+      renderCombate();
+    }
+
+    function rolarIniciativaGeral() {
+      combatState.combatentes.forEach(c => {
+        c.inic = Math.floor(Math.random() * 20) + 1;
+      });
+      reordenarPorIniciativa();
+    }
+
+    function reordenarPorIniciativa() {
+      combatState.combatentes.sort((a, b) => b.inic - a.inic);
+      combatState.turnoAtual = 0;
+      salvarEstadoCombate();
+      renderCombate();
+    }
+
+    function limparCombate() {
+      if (!confirm('Deseja realmente remover todos os combatentes da simulação atual?')) return;
+      combatState.combatentes = [];
+      combatState.rodada = 1;
+      combatState.turnoAtual = 0;
+      salvarEstadoCombate();
+      renderRosterCampanha();
+      renderCombate();
+    }
+
+    // Atualizações dos Combatentes
+    function ajustarVida(index, delta) {
+      const c = combatState.combatentes[index];
+      if (!c) return;
+
+      c.vidaAtual = Math.max(0, Math.min(c.vidaMax * 2, c.vidaAtual + delta));
+      salvarEstadoCombate();
+      renderCombate();
+    }
+
+    function alterarCampo(index, campo, valor) {
+      const c = combatState.combatentes[index];
+      if (!c) return;
+
+      if (campo === 'vidaAtual' || campo === 'vidaMax' || campo === 'inic' || campo === 'ca') {
+        c[campo] = parseInt(valor) || 0;
+      } else {
+        c[campo] = valor;
+      }
+
+      salvarEstadoCombate();
+      if (campo === 'vidaAtual' || campo === 'vidaMax') {
+        renderCombate();
+      }
+    }
+
+    function toggleCondicao(index, condicao) {
+      const c = combatState.combatentes[index];
+      if (!c) return;
+      if (!c.condicoes) c.condicoes = [];
+
+      const pos = c.condicoes.indexOf(condicao);
+      if (pos >= 0) {
+        c.condicoes.splice(pos, 1);
+      } else {
+        c.condicoes.push(condicao);
+      }
+
+      salvarEstadoCombate();
+      renderCombate();
+    }
+
+    function duplicarCombatente(index) {
+      const c = combatState.combatentes[index];
+      if (!c) return;
+
+      combatState.combatentes.splice(index + 1, 0, {
+        ...c,
+        id: Date.now() + Math.random(),
+        nome: `${c.nome} (Cópia)`
+      });
+
+      salvarEstadoCombate();
+      renderCombate();
+    }
+
+    function removerCombatente(index) {
+      combatState.combatentes.splice(index, 1);
+      if (combatState.turnoAtual >= combatState.combatentes.length) {
+        combatState.turnoAtual = Math.max(0, combatState.combatentes.length - 1);
+      }
+
+      salvarEstadoCombate();
+      renderRosterCampanha();
+      renderCombate();
+    }
+
+    // Renderização Principal do Combate
+    function renderCombate() {
+      const trackList = document.getElementById('combat-track-list');
+      const displayVez = document.getElementById('display-vez');
+      const displayRodada = document.getElementById('display-rodada');
+
+      if (!campAtiva) {
+        displayRodada.innerText = 'SEM CAMPANHA';
+        displayVez.innerHTML = '<span style="color:var(--danger); font-size:13px;">⚠️ Nenhuma campanha ativa</span>';
+        trackList.innerHTML = `
+          <div style="background:var(--bg-panel); border:1px solid rgba(239, 68, 68, 0.4); border-radius:var(--radius-md); padding:40px 20px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:8px;">⚠️</div>
+            <h3 style="font-size:16px; color:var(--text-main); margin-bottom:6px;">Nenhuma Campanha Ativa</h3>
+            <p style="font-size:13px; color:var(--text-muted); max-width:440px; margin:0 auto 16px;">
+              Você precisa selecionar ou criar uma campanha na página inicial para gerenciar as fichas e combates da sessão.
+            </p>
+            <a href="index.html" class="btn-success" style="text-decoration:none; display:inline-flex;">
+              🎲 Ir para Início & Selecionar Campanha
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      displayRodada.innerText = `RODADA ${combatState.rodada}`;
+
+      if (combatState.combatentes.length === 0) {
+        displayVez.innerHTML = '<span style="color:var(--text-subtle);">Nenhum combate em andamento</span>';
+        trackList.innerHTML = `
+          <div style="background:var(--bg-panel); border:1px dashed var(--border-color); border-radius:var(--radius-md); padding:40px 20px; text-align:center;">
+            <div style="font-size:28px; margin-bottom:8px;">⚔️</div>
+            <h3 style="font-size:15px; color:var(--text-main); margin-bottom:4px;">Nenhum combatente ativo</h3>
+            <p style="font-size:12.5px; color:var(--text-muted); max-width:440px; margin:0 auto;">
+              Adicione jogadores da campanha na barra lateral à esquerda ou cadastre inimigos manuais para iniciar a simulação.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      const combatenteAtivo = combatState.combatentes[combatState.turnoAtual];
+      displayVez.innerHTML = combatenteAtivo 
+        ? `Turno de: <strong style="color:var(--rpg-gold); font-size:14px;">${escapeHTML(combatenteAtivo.nome)}</strong>`
+        : '';
+
+      const condicoesDisponiveis = ['Caído', 'Atordoado', 'Sangrando', 'Envenenado', 'Cego', 'Invisível'];
+
+      trackList.innerHTML = combatState.combatentes.map((c, i) => {
+        const isVez = (i === combatState.turnoAtual);
+        const isDead = c.vidaAtual <= 0;
+        const maxVida = c.vidaMax > 0 ? c.vidaMax : 1;
+        const pctVida = Math.max(0, Math.min(100, Math.round((c.vidaAtual / maxVida) * 100)));
+        const colorClass = pctVida > 50 ? '' : pctVida > 20 ? 'mid' : 'low';
+
+        const faccaoClass = c.faccao === 'player' ? 'faction-player' : c.faccao === 'ally' ? 'faction-ally' : 'faction-enemy';
+        const faccaoNome = c.faccao === 'player' ? 'JOGADOR' : c.faccao === 'ally' ? 'ALIADO' : 'INIMIGO';
+
+        return `
+          <div class="combat-card ${isVez ? 'is-active-turn' : ''} ${isDead ? 'is-dead' : ''}">
+            
+            <!-- Linha Superior: Posição, Facção, Nome e Ações -->
+            <div class="combat-card-head">
+              <div class="combat-card-left">
+                <span class="inic-badge" title="Posição na ordem de iniciativa">#${i + 1}</span>
+                <span class="faction-tag ${faccaoClass}">${faccaoNome}</span>
+                <input class="combat-name-inp" value="${escapeHTML(c.nome)}" onchange="alterarCampo(${i}, 'nome', this.value)" placeholder="Nome">
+                ${isVez ? '<span class="active-turn-tag">⚡ VEZ DE AGIR</span>' : ''}
+                ${isDead ? '<span style="font-size:11px; color:var(--danger); font-weight:700;">💀 DERROTADO</span>' : ''}
+              </div>
+
+              <div class="combat-card-actions">
+                <button class="btn-secondary" onclick="duplicarCombatente(${i})" title="Duplicar este combatente" style="padding:4px 8px; font-size:11px;">📋 Copiar</button>
+                <button class="btn-danger" onclick="removerCombatente(${i})" title="Remover combatente" style="padding:4px 8px; font-size:11px;">✕</button>
+              </div>
+            </div>
+
+            <!-- Linha de Vida Tática & Dano Rápido -->
+            <div class="combat-hp-row">
+              <div class="hp-display">
+                <span>🩸 HP:</span>
+                <input type="number" class="hp-num-inp" value="${c.vidaAtual}" onchange="alterarCampo(${i}, 'vidaAtual', this.value)">
+                <span>/</span>
+                <input type="number" class="hp-num-inp" value="${c.vidaMax}" onchange="alterarCampo(${i}, 'vidaMax', this.value)" title="Vida Máxima">
+              </div>
+
+              <div class="hp-meter-bar" title="Vida: ${c.vidaAtual}/${c.vidaMax} (${pctVida}%)">
+                <div class="hp-meter-fill ${colorClass}" style="width: ${pctVida}%;"></div>
+              </div>
+
+              <!-- Botões rápidos de dano/cura -->
+              <div class="quick-dmg-tools">
+                <button class="btn-dmg-adj minus" onclick="ajustarVida(${i}, -5)" title="Causar 5 de Dano">-5</button>
+                <button class="btn-dmg-adj minus" onclick="ajustarVida(${i}, -1)" title="Causar 1 de Dano">-1</button>
+                <button class="btn-dmg-adj plus" onclick="ajustarVida(${i}, 1)" title="Curar 1 HP">+1</button>
+                <button class="btn-dmg-adj plus" onclick="ajustarVida(${i}, 5)" title="Curar 5 HP">+5</button>
+              </div>
+            </div>
+
+            <!-- Linha de Estatísticas & Condições -->
+            <div class="combat-stats-strip">
+              <div style="display:flex; gap:10px; align-items:center;">
+                <div class="stat-field" title="Iniciativa do combatente">
+                  <span>🎯 Inic:</span>
+                  <input type="number" value="${c.inic}" onchange="alterarCampo(${i}, 'inic', this.value)">
+                </div>
+                <div class="stat-field" title="Classe de Armadura / Defesa">
+                  <span>🛡️ CA:</span>
+                  <input type="number" value="${c.ca || 10}" onchange="alterarCampo(${i}, 'ca', this.value)">
+                </div>
+              </div>
+
+              <!-- Tags de Condições / Status Toggles -->
+              <div class="condition-toggles">
+                ${condicoesDisponiveis.map(cond => {
+                  const ativa = (c.condicoes || []).includes(cond);
+                  return `
+                    <span class="cond-tag ${ativa ? 'active' : ''}" onclick="toggleCondicao(${i}, '${cond}')">
+                      ${ativa ? '✓ ' : ''}${cond}
+                    </span>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Linha de Anotação Rápida de Ações / Habilidades -->
+            <div>
+              <input class="combat-note-inp" value="${escapeHTML(c.notas || '')}" onchange="alterarCampo(${i}, 'notas', this.value)" placeholder="Ataques, CA, perícias ou resistências...">
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Configurações Modal
+    function abrirConfiguracoes() {
+      document.getElementById('settings-modal').classList.add('active');
+    }
+
+    function fecharConfiguracoes() {
+      document.getElementById('settings-modal').classList.remove('active');
+    }
+
+    function fecharConfiguracoesPorFora(e) {
+      if (e.target.id === 'settings-modal') {
+        fecharConfiguracoes();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') fecharConfiguracoes();
+    });
+
+    document.addEventListener('DOMContentLoaded', aplicarEstadoSidebar);
 
     // Init
     window.onload = function() {
       aplicarEstadoSidebar();
       carregarCampanhaSidebar();
+      renderRosterCampanha();
       renderCombate();
     };
   </script>

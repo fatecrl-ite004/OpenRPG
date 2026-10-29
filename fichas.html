@@ -1,1352 +1,784 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>OpenRPG - Fichas</title>
-
+  <title>OpenRPG - Fichas de Personagem</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
   <div class="app-container">
-
-    <!-- ================= SIDEBAR ================= -->
-
-    <aside id="sidebar" class="sidebar collapsed">
-
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
       <div class="brand">
-
-        <button
-          class="btn-toggle-sidebar"
-          onclick="toggleSidebar()"
-          title="Recolher menu lateral"
-        >
-          ◀
-        </button>
-
-        <img
-          src="img/icon.webp"
-          alt="OpenRPG"
-          class="brand-icon"
-        >
-
+        <button class="btn-toggle-sidebar" onclick="toggleSidebar()" title="Recolher menu lateral">◀</button>
+        <img src="img/icon.webp" alt="OpenRPG" class="brand-icon">
         <h1>OpenRPG</h1>
-
-        <div
-          id="sidebar-campanha"
-          class="sidebar-campaign-info"
-        ></div>
-
+        <div id="sidebar-campanha" class="sidebar-campaign-info"></div>
       </div>
-
-
       <nav class="nav-menu">
-
-        <a
-          class="nav-btn"
-          href="index.html"
-        >
+        <a id="btn-tab-home" class="nav-btn" href="index.html">
           🏠 Início
         </a>
-
-        <a
-          class="nav-btn"
-          href="combate.html"
-        >
-          ⚔️ Sessão / Combate
+        <a id="btn-tab-sessao" class="nav-btn" href="combate.html">
+          ⚔️ Simulação de Combate
         </a>
-
-        <a
-          class="nav-btn"
-          href="mestre.html"
-        >
+        <a id="btn-tab-mestre" class="nav-btn" href="mestre.html">
           👑 Painel do Mestre
         </a>
-
-        <a
-          class="nav-btn active"
-          href="fichas.html"
-        >
+        <a id="btn-tab-fichas" class="nav-btn active" href="fichas.html">
           📄 Fichas de Personagem
         </a>
-
       </nav>
-
     </aside>
+    <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
-
-    <!-- ================= BOTÃO MENU ================= -->
-
-    <button
-      class="btn-open-sidebar"
-      onclick="toggleSidebar()"
-    >
-      ☰ Abrir Menu
-    </button>
-
-
-    <!-- ================= CONTEÚDO ================= -->
-
+    <!-- Main Content -->
     <main class="main-content">
+      
+      <!-- Top Bar -->
+      <header class="top-nav-bar">
+        <div class="top-nav-left">
+          <button class="btn-sidebar-toggle" onclick="toggleSidebar()" title="Abrir ou fechar menu lateral">
+            ☰ Menu
+          </button>
+          <div class="top-page-badge">
+            📄 Fichas de Personagem
+          </div>
+        </div>
+        <div class="top-nav-right">
+          <div id="top-camp-indicator" class="top-camp-pill" style="display: none;"></div>
+          <button class="btn-settings" onclick="abrirConfiguracoes()" title="Configurações do sistema">
+            ⚙️ <span class="btn-settings-text">Configurações</span>
+          </button>
+        </div>
+      </header>
 
-      <section
-        class="section-container"
-        style="max-width: 900px; margin: 0 auto;"
-      >
-
+      <section class="section-container" style="max-width: 960px; margin: 0 auto;">
+        
         <div class="section-header">
-
           <h2>📄 Fichas de Personagem</h2>
-
           <p>
-            O mestre define os campos e os jogadores
-            preenchem suas próprias fichas.
+            O mestre gerencia os parâmetros da campanha e cada ficha tem seus atributos e vida preenchidos individualmente.
           </p>
-
         </div>
 
-
-        <!-- ==================================================
-             SELECIONAR CAMPANHA
-        ================================================== -->
-
+        <!-- 1. Campanha da Ficha -->
         <div class="panel">
-
-          <div class="panel-title">
-            🎲 Campanha desta Ficha
-          </div>
-
-          <p style="color: var(--text-muted);">
-
-            Escolha em qual campanha esta ficha será utilizada.
-            As fichas e os parâmetros ficam separados por campanha.
-
+          <div class="panel-title">🎲 Campanha Atual</div>
+          <p class="panel-subtitle">
+            Selecione a campanha ativa. As fichas e parâmetros são vinculados e isolados por campanha.
           </p>
-
-
-          <div
-            style="
-              display:flex;
-              gap:10px;
-              margin-top:15px;
-              flex-wrap:wrap;
-              align-items:center;
-            "
-          >
-
-            <select
-              id="seletor-campanha-ficha"
-              onchange="selecionarCampanhaFicha(this.value)"
-              style="
-                flex:1;
-                min-width:220px;
-              "
-            >
-
-              <option value="">
-                Selecione uma campanha...
-              </option>
-
+          <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; align-items: center;">
+            <select id="seletor-campanha-ficha" onchange="selecionarCampanhaFicha(this.value)" style="flex: 1; min-width: 220px;">
+              <option value="">Selecione uma campanha...</option>
             </select>
-
-
-            <button
-              class="btn-copy"
-              onclick="window.location.href='index.html'"
-            >
-              ⚙️ Gerenciar Campanhas
-            </button>
-
+            <a href="index.html" class="btn-secondary" style="text-decoration: none;">⚙️ Gerenciar Campanhas</a>
           </div>
-
-
-          <div
-            id="aviso-sem-campanha-ficha"
-            style="
-              display:none;
-              margin-top:12px;
-              color:var(--danger);
-            "
-          >
-            ⚠️ Crie ou selecione uma campanha antes de trabalhar com fichas.
+          <div id="aviso-sem-campanha-ficha" style="display: none; margin-top: 12px; color: var(--danger); font-size: 13px;">
+            ⚠️ Nenhuma campanha ativa selecionada. Crie ou selecione uma campanha na página inicial.
           </div>
-
         </div>
 
-
-        <!-- ==================================================
-             PARÂMETROS DO MESTRE
-        ================================================== -->
-
+        <!-- 2. Parâmetros da Ficha (Mestre) -->
         <div class="panel">
-
-          <div class="panel-title">
-            👑 Parâmetros da Ficha
-          </div>
-
-          <p style="color: var(--text-muted);">
-
-            O mestre define quais informações
-            os jogadores deverão preencher.
-
+          <div class="panel-title">👑 Parâmetros Customizados da Campanha</div>
+          <p class="panel-subtitle">
+            Crie campos personalizados que aparecerão em todas as fichas dos jogadores desta campanha (ex: Força, Destreza, Mana, Defesa, Perícias).
           </p>
 
-
-          <div
-            style="
-              display:flex;
-              gap:10px;
-              margin-top:15px;
-              flex-wrap:wrap;
-            "
-          >
-
-            <input
-              id="nome-parametro"
-              type="text"
-              placeholder="Nome do parâmetro"
-            >
-
-
-            <select id="tipo-parametro">
-
-              <option value="text">
-                Texto
-              </option>
-
-              <option value="number">
-                Número
-              </option>
-
+          <div class="form-grid" style="margin-top: 14px;">
+            <input id="nome-parametro" type="text" placeholder="Nome do parâmetro (ex: Destreza)">
+            <select id="tipo-parametro" style="max-width: 140px;">
+              <option value="text">Texto</option>
+              <option value="number">Número</option>
             </select>
-
-
-            <button
-              class="btn-success"
-              onclick="criarParametro()"
-            >
-              + Criar Parâmetro
-            </button>
-
+            <button class="btn-success" onclick="criarParametro()">+ Criar Parâmetro</button>
           </div>
 
-
-          <div
-            id="lista-parametros"
-            style="margin-top:20px;"
-          ></div>
-
+          <div id="lista-parametros" style="margin-top: 16px;"></div>
         </div>
 
-
-        <!-- ==================================================
-             CRIAR FICHA
-        ================================================== -->
-
-        <div class="panel">
-
-          <div class="panel-title">
-            📜 Criar Ficha
+        <!-- 3. Editor de Ficha (Aparece ao selecionar ou editar uma ficha) -->
+        <div id="ficha-editor" class="panel" style="display: none; border-color: var(--accent);">
+          <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="editor-title">✏️ Preencher Dados da Ficha</span>
+            <button class="btn-secondary" onclick="fecharEditor()" style="padding: 4px 10px; font-size: 12px;">✕ Fechar</button>
           </div>
-
-          <p style="color: var(--text-muted);">
-
-            Crie uma ficha vinculada a um jogador.
-
+          <p class="panel-subtitle">
+            Preencha os atributos, vida máxima (HP) e dados do personagem selecionado.
           </p>
-
-
-          <div
-            style="
-              display:flex;
-              gap:10px;
-              margin-top:15px;
-              flex-wrap:wrap;
-            "
-          >
-
-            <input
-              id="nome-jogador"
-              type="text"
-              placeholder="Nome do jogador"
-            >
-
-
-            <button
-              class="btn-success"
-              onclick="criarFicha()"
-            >
-              + Criar Ficha
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <!-- ==================================================
-             FICHAS SALVAS
-        ================================================== -->
-
-        <div class="panel">
-
-          <div class="panel-title">
-            📂 Fichas Salvas
-          </div>
-
-          <p style="color:var(--text-muted);">
-
-            Aqui estão todas as fichas criadas
-            nesta campanha.
-
-          </p>
-
-
-          <div
-            id="lista-fichas"
-            style="margin-top:20px;"
-          ></div>
-
-        </div>
-
-
-        <!-- ==================================================
-             EDITAR FICHA
-        ================================================== -->
-
-        <div
-          id="ficha-editor"
-          class="panel"
-          style="display:none;"
-        >
-
-          <div class="panel-title">
-            ✏️ Modificar Ficha
-          </div>
-
 
           <div id="campos-ficha"></div>
 
-
-          <div
-            style="
-              display:flex;
-              gap:10px;
-              margin-top:20px;
-              flex-wrap:wrap;
-            "
-          >
-
-            <button
-              class="btn-success"
-              onclick="salvarFicha()"
-            >
-              💾 Salvar Alterações
-            </button>
-
-
-            <button
-              class="btn-danger"
-              onclick="excluirFicha()"
-            >
-              🗑️ Excluir Ficha
-            </button>
-
-
-            <button
-              class="btn-copy"
-              onclick="fecharEditor()"
-            >
-              ✕ Fechar
-            </button>
-
+          <div style="display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap;">
+            <button class="btn-success" onclick="salvarFicha()">💾 Salvar Alterações</button>
+            <button class="btn-copy" onclick="enviarEditandoParaCombate()">⚔️ Enviar para Combate</button>
+            <button class="btn-danger" onclick="excluirFicha()">🗑️ Excluir Ficha</button>
+            <button class="btn-secondary" onclick="fecharEditor()">✕ Cancelar</button>
           </div>
+        </div>
 
+        <!-- 4. Fichas dos Jogadores Cadastrados -->
+        <div class="panel">
+          <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <span>📜 Fichas de Jogadores da Campanha</span>
+            <div style="display: flex; gap: 8px;">
+              <a href="mestre.html" class="btn-secondary" style="font-size: 13px; text-decoration: none;">👑 Ir ao Painel do Mestre</a>
+            </div>
+          </div>
+          <p class="panel-subtitle">
+            Clique em <strong>✏️ Preencher / Editar</strong> para completar a vida (HP) e os parâmetros de cada personagem.
+          </p>
+
+          <div id="lista-fichas" class="player-list"></div>
         </div>
 
       </section>
 
     </main>
-
   </div>
 
+  <!-- Modal de Configurações -->
+  <div id="settings-modal" class="modal-overlay" onclick="fecharConfiguracoesPorFora(event)">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>⚙️ Configurações</h3>
+        <button class="btn-close-modal" onclick="fecharConfiguracoes()">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Opção 1: Tema -->
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-section-title">🎨 Tema Visual</span>
+            <span class="settings-badge">Em breve</span>
+          </div>
+          <p class="settings-desc">Personalização da paleta visual da interface para diferentes cenários de jogo.</p>
+          <div class="theme-preview-grid">
+            <div class="theme-card-option current">
+              <strong>🌑 Dark Obsidian</strong>
+              <span>Tema escuro focado em contraste e clareza (Ativo)</span>
+            </div>
+            <div class="theme-card-option">
+              <strong>📜 Pergaminho Fantasia</strong>
+              <span>Tons terrosos e estética de tomo medieval</span>
+            </div>
+            <div class="theme-card-option">
+              <strong>🌆 Cyberpunk Night</strong>
+              <span>Tons de azul profundo e detalhes ciberpunk</span>
+            </div>
+            <div class="theme-card-option">
+              <strong>⚔️ Grimdark Monocromo</strong>
+              <span>Cinza e grafite com alto foco funcional</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opção 2: Acessibilidade -->
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-section-title">♿ Opções de Acessibilidade</span>
+            <span class="settings-badge planned">Planejado</span>
+          </div>
+          <p class="settings-desc">Recursos pensados para tornar a experiência de mestrar e jogar mais inclusiva e acessível:</p>
+          <div class="a11y-list">
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>🔠 Ajuste da Escala de Texto</strong>
+                <span>Amplie o tamanho das fontes (Normal, Médio, Grande) para leitura confortável na mesa</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>👁️ Modo de Alto Contraste</strong>
+                <span>Realce de bordas e tipografia reforçada para pessoas com baixa visão</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>📖 Fonte Especial para Dislexia</strong>
+                <span>Alternar para a tipografia OpenDyslexic / Lexend facilitando a leitura rápida</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>🛑 Redução de Animações</strong>
+                <span>Desativa transições bruscas de acordo com a preferência do sistema operacional</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>🔊 Feedback Sonoro de Dados</strong>
+                <span>Sons discretos ao rolar e anúncio do resultado para leitores de tela</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>⌨️ Atalhos Rápidos de Teclado</strong>
+                <span>Navegação sem mouse para turnos, rolagem e gerenciamento de combate</span>
+              </div>
+              <span class="a11y-tag">Previsto</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opção 3: Exportar JSON -->
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-section-title">💾 Backup da Campanha</span>
+            <span class="settings-badge">Em breve</span>
+          </div>
+          <p class="settings-desc">Exportação e importação de dados da campanha para portabilidade e segurança.</p>
+          <div class="export-box">
+            <div>
+              <strong style="font-size: 13px; color: var(--text-main);">Exportar JSON Geral da Campanha Ativa</strong>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                Gera um arquivo compacto com fichas, anotações e parâmetros salvos.
+              </div>
+            </div>
+            <button class="btn-secondary" style="opacity: 0.6; cursor: not-allowed;" title="Funcionalidade em desenvolvimento">
+              📥 Baixar JSON (Em breve)
+            </button>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="fecharConfiguracoes()">Fechar</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-
     /* ==================================================
-       SIDEBAR
+       SIDEBAR & ESTADO GERAL
     ================================================== */
-
     function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (!sidebar) return;
 
-      const sidebar =
-        document.getElementById('sidebar');
-
-      const isCollapsed =
-        sidebar.classList.toggle('collapsed');
-
-      localStorage.setItem(
-        'openrpg_sidebar_collapsed',
-        isCollapsed
-      );
-
+      const isCollapsed = sidebar.classList.toggle('collapsed');
+      if (backdrop) {
+        if (!isCollapsed && window.innerWidth <= 960) {
+          backdrop.classList.add('active');
+        } else {
+          backdrop.classList.remove('active');
+        }
+      }
+      localStorage.setItem('openrpg_sidebar_collapsed', isCollapsed ? 'true' : 'false');
     }
-
 
     function aplicarEstadoSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (!sidebar) return;
 
-      const saved =
-        localStorage.getItem(
-          'openrpg_sidebar_collapsed'
-        );
-
+      const saved = localStorage.getItem('openrpg_sidebar_collapsed');
       if (saved !== null) {
-
-        document
-          .getElementById('sidebar')
-          .classList.toggle(
-            'collapsed',
-            saved === 'true'
-          );
-
+        sidebar.classList.toggle('collapsed', saved === 'true');
+      } else {
+        const defaultCollapsed = window.innerWidth <= 960;
+        sidebar.classList.toggle('collapsed', defaultCollapsed);
       }
-
+      if (backdrop) {
+        backdrop.classList.remove('active');
+      }
     }
 
+    function escapeHTML(texto) {
+      const div = document.createElement('div');
+      div.textContent = texto == null ? '' : String(texto);
+      return div.innerHTML;
+    }
 
     /* ==================================================
        CAMPANHA
     ================================================== */
-
     let campanhas = [];
-
-    let campanhaAtiva =
-      JSON.parse(
-        localStorage.getItem(
-          'openrpg_campanha_ativa'
-        ) || 'null'
-      );
-
+    let campanhaAtiva = JSON.parse(localStorage.getItem('openrpg_campanha_ativa') || 'null');
 
     function carregarCampanhas() {
-
-      campanhas =
-        JSON.parse(
-          localStorage.getItem(
-            'openrpg_campanhas'
-          ) || '[]'
-        );
-
+      campanhas = JSON.parse(localStorage.getItem('openrpg_campanhas') || '[]');
     }
-
 
     function carregarCampanhaSidebar() {
+      const elSidebar = document.getElementById('sidebar-campanha');
+      const elTop = document.getElementById('top-camp-indicator');
 
-      const el =
-        document.getElementById(
-          'sidebar-campanha'
-        );
-
-
-      if (
-        campanhaAtiva &&
-        campanhaAtiva.nome
-      ) {
-
-        el.innerHTML = `
-          <span class="camp-tag">
-            🎲 ${escapeHTML(campanhaAtiva.nome)}
-          </span>
-        `;
-
+      if (campanhaAtiva && campanhaAtiva.nome) {
+        if (elSidebar) elSidebar.innerHTML = `<span class="camp-tag">🎲 ${escapeHTML(campanhaAtiva.nome)}</span>`;
+        if (elTop) {
+          elTop.style.display = 'inline-flex';
+          elTop.style.borderColor = 'var(--border-color)';
+          elTop.innerHTML = `🎲 ${escapeHTML(campanhaAtiva.nome)}`;
+        }
       } else {
-
-        el.innerHTML = `
-          <a
-            href="index.html"
-            class="camp-tag"
-            style="
-              text-decoration:none;
-              border-color:var(--danger);
-              color:var(--danger);
-            "
-          >
-            ⚠️ Selecionar Campanha
-          </a>
-        `;
-
+        if (elSidebar) elSidebar.innerHTML = `<a href="index.html" class="camp-tag" style="text-decoration:none; border-color:var(--danger); color:var(--danger);">⚠️ Selecionar Campanha</a>`;
+        if (elTop) {
+          elTop.style.display = 'inline-flex';
+          elTop.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+          elTop.innerHTML = `<a href="index.html" style="color: var(--danger); text-decoration: none;">⚠️ Nenhuma Campanha Ativa</a>`;
+        }
       }
-
     }
-
-
-    /* ==================================================
-       SELETOR DE CAMPANHA DA FICHA
-    ================================================== */
 
     function renderSeletorCampanha() {
-
       carregarCampanhas();
+      const seletor = document.getElementById('seletor-campanha-ficha');
+      const aviso = document.getElementById('aviso-sem-campanha-ficha');
 
-      const seletor =
-        document.getElementById(
-          'seletor-campanha-ficha'
-        );
-
-      const aviso =
-        document.getElementById(
-          'aviso-sem-campanha-ficha'
-        );
-
-
-      seletor.innerHTML = `
-        <option value="">
-          Selecione uma campanha...
-        </option>
-      `;
-
+      seletor.innerHTML = '<option value="">Selecione uma campanha...</option>';
 
       campanhas.forEach(campanha => {
-
-        const option =
-          document.createElement('option');
-
-        option.value =
-          campanha.id;
-
-        option.textContent =
-          campanha.nome;
-
-        if (
-          campanhaAtiva &&
-          String(campanhaAtiva.id) ===
-          String(campanha.id)
-        ) {
-
+        const option = document.createElement('option');
+        option.value = campanha.id;
+        option.textContent = campanha.nome;
+        if (campanhaAtiva && String(campanhaAtiva.id) === String(campanha.id)) {
           option.selected = true;
-
         }
-
         seletor.appendChild(option);
-
       });
 
-
       if (campanhaAtiva) {
-
-        aviso.style.display =
-          'none';
-
+        aviso.style.display = 'none';
       } else {
-
-        aviso.style.display =
-          'block';
-
+        aviso.style.display = 'block';
       }
-
 
       carregarCampanhaSidebar();
-
     }
-
 
     function selecionarCampanhaFicha(id) {
-
       if (!id) {
-
         campanhaAtiva = null;
-
-        localStorage.removeItem(
-          'openrpg_campanha_ativa'
-        );
-
+        localStorage.removeItem('openrpg_campanha_ativa');
         parametros = [];
-
         fichas = [];
-
         fichaEditando = null;
-
         fecharEditor();
-
         renderSeletorCampanha();
-
         renderParametros();
-
         renderFichas();
-
-        return;
-
-      }
-
-
-      const campanha =
-        campanhas.find(
-          campanha =>
-            String(campanha.id) ===
-            String(id)
-        );
-
-
-      if (!campanha) {
         return;
       }
 
+      const campanha = campanhas.find(c => String(c.id) === String(id));
+      if (!campanha) return;
 
-      campanhaAtiva =
-        campanha;
-
-
-      localStorage.setItem(
-        'openrpg_campanha_ativa',
-        JSON.stringify(campanhaAtiva)
-      );
-
-
+      campanhaAtiva = campanha;
+      localStorage.setItem('openrpg_campanha_ativa', JSON.stringify(campanhaAtiva));
       fichaEditando = null;
-
       fecharEditor();
-
       carregarDados();
-
       renderSeletorCampanha();
-
       renderParametros();
-
       renderFichas();
-
     }
 
-
     /* ==================================================
-       DADOS
+       DADOS (FICHAS & PARÂMETROS)
     ================================================== */
-
     let parametros = [];
-
     let fichas = [];
-
     let fichaEditando = null;
 
-
     function carregarDados() {
-
       if (!campanhaAtiva) {
-
         parametros = [];
-
         fichas = [];
-
         return;
-
       }
 
+      parametros = JSON.parse(localStorage.getItem(`openrpg_parametros_${campanhaAtiva.id}`) || '[]');
+      fichas = JSON.parse(localStorage.getItem(`openrpg_fichas_${campanhaAtiva.id}`) || '[]');
 
-      parametros =
-        JSON.parse(
-          localStorage.getItem(
-            `openrpg_parametros_${campanhaAtiva.id}`
-          ) || '[]'
-        );
-
-
-      fichas =
-        JSON.parse(
-          localStorage.getItem(
-            `openrpg_fichas_${campanhaAtiva.id}`
-          ) || '[]'
-        );
-
+      fichas.forEach(f => {
+        if (!f.personagem) f.personagem = f.jogador;
+        if (f.vida === undefined || f.vida === null) f.vida = 0;
+        if (f.iniciativa === undefined || f.iniciativa === null) f.iniciativa = 0;
+        if (f.defesa === undefined || f.defesa === null) f.defesa = 10;
+        if (f.mochila === undefined || f.mochila === null) f.mochila = '';
+      });
     }
-
 
     function salvarDados() {
-
-      if (!campanhaAtiva) {
-        return;
-      }
-
-
-      localStorage.setItem(
-        `openrpg_parametros_${campanhaAtiva.id}`,
-        JSON.stringify(parametros)
-      );
-
-
-      localStorage.setItem(
-        `openrpg_fichas_${campanhaAtiva.id}`,
-        JSON.stringify(fichas)
-      );
-
+      if (!campanhaAtiva) return;
+      localStorage.setItem(`openrpg_parametros_${campanhaAtiva.id}`, JSON.stringify(parametros));
+      localStorage.setItem(`openrpg_fichas_${campanhaAtiva.id}`, JSON.stringify(fichas));
     }
 
-
     /* ==================================================
-       CRIAR PARÂMETRO
+       PARÂMETROS
     ================================================== */
-
     function criarParametro() {
-
       if (!campanhaAtiva) {
-
-        alert(
-          'Selecione uma campanha primeiro.'
-        );
-
+        alert('Selecione uma campanha primeiro.');
         return;
-
       }
 
-
-      const input =
-        document.getElementById(
-          'nome-parametro'
-        );
-
-
-      const nome =
-        input.value.trim();
-
-
-      const tipo =
-        document.getElementById(
-          'tipo-parametro'
-        ).value;
-
+      const input = document.getElementById('nome-parametro');
+      const nome = input.value.trim();
+      const tipo = document.getElementById('tipo-parametro').value;
 
       if (!nome) {
-
-        alert(
-          'Digite o nome do parâmetro.'
-        );
-
+        alert('Digite o nome do parâmetro.');
         return;
-
       }
 
-
       const parametro = {
-
         id: Date.now(),
-
         nome: nome,
-
         tipo: tipo
-
       };
-
 
       parametros.push(parametro);
 
-
       fichas.forEach(ficha => {
-
-        if (!ficha.dados) {
-          ficha.dados = {};
-        }
-
+        if (!ficha.dados) ficha.dados = {};
         ficha.dados[parametro.id] = '';
-
       });
 
-
       salvarDados();
-
-
       input.value = '';
-
-
       renderParametros();
-
-      renderFichas();
-
+      if (fichaEditando) editarFicha(fichaEditando.id);
     }
-
-
-    /* ==================================================
-       EXCLUIR PARÂMETRO
-    ================================================== */
 
     function excluirParametro(id) {
-
-      parametros =
-        parametros.filter(
-          parametro =>
-            parametro.id !== id
-        );
-
-
+      if (!confirm('Deseja excluir este parâmetro de todas as fichas da campanha?')) return;
+      parametros = parametros.filter(p => p.id !== id);
       fichas.forEach(ficha => {
-
-        if (ficha.dados) {
-
-          delete ficha.dados[id];
-
-        }
-
+        if (ficha.dados) delete ficha.dados[id];
       });
-
-
       salvarDados();
-
-
       renderParametros();
-
-      renderFichas();
-
+      if (fichaEditando) editarFicha(fichaEditando.id);
     }
-
-
-    /* ==================================================
-       MOSTRAR PARÂMETROS
-    ================================================== */
 
     function renderParametros() {
-
-      const lista =
-        document.getElementById(
-          'lista-parametros'
-        );
-
-
+      const lista = document.getElementById('lista-parametros');
       if (!campanhaAtiva) {
-
-        lista.innerHTML =
-          '<p class="empty-message">Selecione uma campanha para visualizar os parâmetros.</p>';
-
+        lista.innerHTML = '<p class="empty-message">Selecione uma campanha para visualizar os parâmetros.</p>';
         return;
-
       }
-
 
       if (parametros.length === 0) {
-
-        lista.innerHTML =
-          '<p class="empty-message">Nenhum parâmetro criado.</p>';
-
+        lista.innerHTML = '<p class="empty-message">Nenhum parâmetro customizado criado ainda. Crie parâmetros como Atributos ou Perícias acima.</p>';
         return;
-
       }
 
-
-      lista.innerHTML =
-        parametros.map(parametro => `
-
-          <div
-            class="player-item"
-            style="
-              margin-bottom:8px;
-            "
-          >
-
-            <div>
-
-              <strong>
-                ${escapeHTML(parametro.nome)}
-              </strong>
-
-
-              <span
-                style="
-                  color:var(--text-muted);
-                  margin-left:10px;
-                "
-              >
-
-                ${
-                  parametro.tipo === 'number'
-                    ? 'Número'
-                    : 'Texto'
-                }
-
-              </span>
-
-            </div>
-
-
-            <button
-              class="btn-danger"
-              onclick="excluirParametro(${parametro.id})"
-            >
-              ✕
-            </button>
-
+      lista.innerHTML = parametros.map(parametro => `
+        <div class="player-item" style="margin-bottom: 8px;">
+          <div>
+            <strong>${escapeHTML(parametro.nome)}</strong>
+            <span style="color: var(--text-muted); margin-left: 10px; font-size: 12px;">
+              Tipo: ${parametro.tipo === 'number' ? 'Numérico' : 'Texto'}
+            </span>
           </div>
-
-        `).join('');
-
+          <button class="btn-danger" onclick="excluirParametro(${parametro.id})" title="Excluir parâmetro">✕</button>
+        </div>
+      `).join('');
     }
 
-
     /* ==================================================
-       CRIAR FICHA
+       LISTAGEM DE FICHAS
     ================================================== */
-
-    function criarFicha() {
-
-      if (!campanhaAtiva) {
-
-        alert(
-          'Selecione uma campanha primeiro.'
-        );
-
-        return;
-
-      }
-
-
-      if (parametros.length === 0) {
-
-        alert(
-          'Crie pelo menos um parâmetro antes de criar uma ficha.'
-        );
-
-        return;
-
-      }
-
-
-      const input =
-        document.getElementById(
-          'nome-jogador'
-        );
-
-
-      const jogador =
-        input.value.trim();
-
-
-      if (!jogador) {
-
-        alert(
-          'Digite o nome do jogador.'
-        );
-
-        return;
-
-      }
-
-
-      const dados = {};
-
-
-      parametros.forEach(parametro => {
-
-        dados[parametro.id] = '';
-
-      });
-
-
-      const ficha = {
-
-        id: Date.now(),
-
-        jogador: jogador,
-
-        dados: dados
-
-      };
-
-
-      fichas.push(ficha);
-
-
-      salvarDados();
-
-
-      input.value = '';
-
-
-      renderFichas();
-
-    }
-
-
-    /* ==================================================
-       MOSTRAR FICHAS
-    ================================================== */
-
     function renderFichas() {
-
-      const lista =
-        document.getElementById(
-          'lista-fichas'
-        );
-
+      const lista = document.getElementById('lista-fichas');
 
       if (!campanhaAtiva) {
-
-        lista.innerHTML =
-          '<p class="empty-message">Selecione uma campanha para visualizar as fichas.</p>';
-
+        lista.innerHTML = '<p class="empty-message">Selecione uma campanha para visualizar as fichas.</p>';
         return;
-
       }
-
 
       if (fichas.length === 0) {
-
-        lista.innerHTML =
-          '<p class="empty-message">Nenhuma ficha salva.</p>';
-
+        lista.innerHTML = `
+          <div class="empty-message">
+            Nenhuma ficha cadastrada ainda nesta campanha. Cadastre jogadores no 
+            <a href="mestre.html" style="color: var(--accent);">Painel do Mestre</a> para começar.
+          </div>
+        `;
         return;
-
       }
 
+      lista.innerHTML = fichas.map(ficha => {
+        const hpPreenchido = ficha.vida && parseInt(ficha.vida) > 0;
+        const hpBadge = hpPreenchido
+          ? `<span style="color: #34d399; font-weight: 600;">🩸 Vida: ${ficha.vida}</span>`
+          : `<span style="color: var(--text-subtle); font-style: italic;">🩸 HP não definido</span>`;
 
-      lista.innerHTML =
-        fichas.map(ficha => `
+        const inicBadge = `<span style="color: #60a5fa; font-weight: 500;">🎯 Inic: ${ficha.iniciativa ?? 0}</span>`;
+        const defBadge = `<span style="color: #cbd5e1; font-weight: 500;">🛡️ Defesa: ${ficha.defesa ?? 10}</span>`;
 
-          <div
-            class="player-item"
-            style="
-              margin-bottom:10px;
-              gap:10px;
-              flex-wrap:wrap;
-            "
-          >
+        const mochilaPreview = ficha.mochila && ficha.mochila.trim()
+          ? `<div style="font-size: 11px; color: var(--text-subtle); margin-top: 3px; max-width: 480px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🎒 Mochila: ${escapeHTML(ficha.mochila)}</div>`
+          : '';
 
-            <div>
-
-              📄
-
-              <strong>
-                ${escapeHTML(ficha.jogador)}
-              </strong>
-
-
-              <div
-                style="
-                  color:var(--text-muted);
-                  font-size:12px;
-                  margin-top:4px;
-                "
-              >
-
-                Campanha:
-                ${escapeHTML(campanhaAtiva.nome)}
-
+        return `
+          <div class="player-item">
+            <div class="player-info">
+              <strong>🗡️ ${escapeHTML(ficha.personagem || ficha.jogador)} <span style="font-weight: normal; color: var(--text-muted); font-size: 13px;">(Jogador: ${escapeHTML(ficha.jogador)})</span></strong>
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 2px; font-size: 12px;">
+                ${hpBadge}
+                <span style="color: var(--border-color);">|</span>
+                ${inicBadge}
+                <span style="color: var(--border-color);">|</span>
+                ${defBadge}
               </div>
-
+              ${mochilaPreview}
             </div>
-
-
-            <div
-              style="
-                display:flex;
-                gap:8px;
-              "
-            >
-
-              <button
-                class="btn-copy"
-                onclick="editarFicha(${ficha.id})"
-              >
-                ✏️ Modificar
-              </button>
-
-
-              <button
-                class="btn-danger"
-                onclick="excluirFichaPorId(${ficha.id})"
-              >
-                🗑️
-              </button>
-
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <button class="btn-copy" onclick="editarFicha(${ficha.id})" title="Preencher atributos, vida, iniciativa, defesa e mochila">✏️ Preencher / Editar</button>
+              <button class="btn-success" onclick="enviarFichaParaCombate(${ficha.id})" title="Enviar personagem para simulação de combate">⚔️ Ao Combate</button>
+              <button class="btn-danger" onclick="excluirFichaPorId(${ficha.id})" title="Excluir ficha">✕</button>
             </div>
-
           </div>
-
-        `).join('');
-
+        `;
+      }).join('');
     }
 
+    function enviarFichaParaCombate(id) {
+      const ficha = fichas.find(f => f.id === id);
+      if (!ficha) return;
+
+      const campKey = campanhaAtiva ? `_${campanhaAtiva.id}` : '';
+      let combatState = { rodada: 1, turnoAtual: 0, combatentes: [] };
+      const salvo = localStorage.getItem(`openrpg_combat_sim_${campKey}`);
+      if (salvo) {
+        try { combatState = JSON.parse(salvo); } catch(e) {}
+      }
+
+      const vida = parseInt(ficha.vida) > 0 ? parseInt(ficha.vida) : 20;
+      const inic = parseInt(ficha.iniciativa) || 10;
+      const ca = parseInt(ficha.defesa) || 10;
+      const mochilaNota = ficha.mochila ? `Mochila: ${ficha.mochila}` : '';
+
+      combatState.combatentes.push({
+        id: Date.now() + Math.random(),
+        fichaId: ficha.id,
+        nome: ficha.personagem || ficha.jogador || 'Personagem',
+        faccao: 'player',
+        vidaAtual: vida,
+        vidaMax: vida,
+        inic: inic,
+        ca: ca,
+        condicoes: [],
+        notas: mochilaNota || `Jogador: ${ficha.jogador}`
+      });
+
+      localStorage.setItem(`openrpg_combat_sim_${campKey}`, JSON.stringify(combatState));
+      localStorage.setItem(`openrpg_personagens${campKey}`, JSON.stringify(combatState.combatentes));
+      window.location.href = 'combate.html';
+    }
+
+    function enviarEditandoParaCombate() {
+      if (!fichaEditando) return;
+      salvarFicha(false);
+      enviarFichaParaCombate(fichaEditando.id);
+    }
 
     /* ==================================================
-       EDITAR FICHA
+       EDITAR / PREENCHER DADOS DA FICHA
+       (Vida, Iniciativa, Defesa e Mochila são obrigatórios)
     ================================================== */
-
     function editarFicha(id) {
+      const ficha = fichas.find(f => f.id === id);
+      if (!ficha) return;
 
-      const ficha =
-        fichas.find(
-          f => f.id === id
-        );
+      fichaEditando = ficha;
+      if (!ficha.dados) ficha.dados = {};
 
+      const editor = document.getElementById('ficha-editor');
+      const editorTitle = document.getElementById('editor-title');
+      const campos = document.getElementById('campos-ficha');
 
-      if (!ficha) {
-        return;
-      }
+      editorTitle.innerHTML = `✏️ Editando Ficha: <span style="color: var(--accent);">${escapeHTML(ficha.personagem || ficha.jogador)}</span>`;
 
-
-      fichaEditando =
-        ficha;
-
-
-      if (!ficha.dados) {
-        ficha.dados = {};
-      }
-
-
-      const editor =
-        document.getElementById(
-          'ficha-editor'
-        );
-
-
-      const campos =
-        document.getElementById(
-          'campos-ficha'
-        );
-
-
+      // Campos base obrigatórios: Jogador, Personagem, Vida, Iniciativa, Defesa e Mochila
       campos.innerHTML = `
+        <!-- Identificação e Estatísticas Obrigatórias -->
+        <div style="background: var(--bg-card); padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 14px;">
+          <h4 style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 12px;">Identificação & Parâmetros Obrigatórios</h4>
+          <div class="form-grid">
+            <div style="flex: 1 1 170px;">
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">👤 Nome do Jogador</label>
+              <input id="edit-jogador" value="${escapeHTML(ficha.jogador || '')}" style="width: 100%;">
+            </div>
+            <div style="flex: 1 1 170px;">
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">🗡️ Nome do Personagem</label>
+              <input id="edit-personagem" value="${escapeHTML(ficha.personagem || ficha.jogador || '')}" style="width: 100%;">
+            </div>
+            <div style="flex: 0 1 110px;">
+              <label style="font-size: 12px; color: #34d399; display: block; margin-bottom: 4px; font-weight: 700;">🩸 Vida Máx (HP) *</label>
+              <input id="edit-vida" type="number" value="${ficha.vida || ''}" placeholder="ex: 25" style="width: 100%; border-color: rgba(16, 185, 129, 0.4);">
+            </div>
+            <div style="flex: 0 1 110px;">
+              <label style="font-size: 12px; color: #60a5fa; display: block; margin-bottom: 4px; font-weight: 700;">🎯 Iniciativa *</label>
+              <input id="edit-inic" type="number" value="${ficha.iniciativa ?? ''}" placeholder="ex: 12" style="width: 100%; border-color: rgba(96, 165, 250, 0.4);">
+            </div>
+            <div style="flex: 0 1 110px;">
+              <label style="font-size: 12px; color: #e2e8f0; display: block; margin-bottom: 4px; font-weight: 700;">🛡️ Defesa (CA) *</label>
+              <input id="edit-defesa" type="number" value="${ficha.defesa ?? ''}" placeholder="ex: 14" style="width: 100%; border-color: rgba(226, 232, 240, 0.4);">
+            </div>
+          </div>
+        </div>
 
-        <h3>
-          👤 ${escapeHTML(ficha.jogador)}
-        </h3>
+        <!-- Mochila / Inventário Obrigatório -->
+        <div style="background: var(--bg-card); padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 12px; color: var(--rpg-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+              🎒 Mochila / Inventário (Obrigatório)
+            </label>
+            <span style="font-size: 11px; color: var(--text-subtle);">O que o personagem carrega consigo</span>
+          </div>
+          <textarea 
+            id="edit-mochila" 
+            style="width: 100%; height: 95px; resize: vertical; line-height: 1.45;" 
+            placeholder="Exemplo: Espada curta de aço, Arco longo, 20 flechas, 3 poções de cura, 50 peças de ouro, corda de 15m, ração de viagem para 5 dias..."
+          >${escapeHTML(ficha.mochila || '')}</textarea>
+        </div>
 
+        <!-- Parâmetros Adicionais Customizados da Campanha -->
+        ${parametros.length > 0 ? `
+          <div style="background: var(--bg-card); padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 14px;">
+            <h4 style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 10px;">Parâmetros Customizados da Campanha</h4>
+            <div class="form-grid">
+              ${parametros.map(p => {
+                const valor = ficha.dados[p.id] ?? '';
+                return `
+                  <div style="flex: 1 1 160px;">
+                    <label style="font-size: 12px; color: var(--text-main); display: block; margin-bottom: 4px; font-weight: 500;">${escapeHTML(p.nome)}</label>
+                    <input id="campo-${p.id}" type="${p.tipo}" value="${escapeHTML(valor)}" style="width: 100%;">
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Anotações Gerais Adicionais -->
+        <div style="background: var(--bg-card); padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">📝 Anotações Gerais / Histórico / Magias (Opcional)</label>
+          <textarea id="edit-notas" style="width: 100%; height: 75px; resize: vertical;" placeholder="História, perícias especiais, magias conhecidas, arquétipo...">${escapeHTML(ficha.notas || '')}</textarea>
+        </div>
       `;
 
-
-      parametros.forEach(parametro => {
-
-        if (
-          ficha.dados[parametro.id] ===
-          undefined
-        ) {
-
-          ficha.dados[parametro.id] = '';
-
-        }
-
-
-        const valor =
-          ficha.dados[parametro.id] ?? '';
-
-
-        campos.innerHTML += `
-
-          <div
-            style="
-              margin-top:15px;
-            "
-          >
-
-            <label>
-              ${escapeHTML(parametro.nome)}
-            </label>
-
-
-            <input
-              id="campo-${parametro.id}"
-              type="${parametro.tipo}"
-              value="${escapeHTML(valor)}"
-            >
-
-          </div>
-
-        `;
-
-      });
-
-
-      editor.style.display =
-        'block';
-
-
-      editor.scrollIntoView({
-        behavior: 'smooth'
-      });
-
+      editor.style.display = 'block';
+      editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    function salvarFicha(mostrarAlerta = true) {
+      if (!fichaEditando) return;
+      if (!fichaEditando.dados) fichaEditando.dados = {};
 
-    /* ==================================================
-       SALVAR ALTERAÇÕES
-    ================================================== */
+      const editJogador = document.getElementById('edit-jogador');
+      const editPersonagem = document.getElementById('edit-personagem');
+      const editVida = document.getElementById('edit-vida');
+      const editInic = document.getElementById('edit-inic');
+      const editDefesa = document.getElementById('edit-defesa');
+      const editMochila = document.getElementById('edit-mochila');
+      const editNotas = document.getElementById('edit-notas');
 
-    function salvarFicha() {
-
-      if (!fichaEditando) {
-        return;
-      }
-
-
-      if (!fichaEditando.dados) {
-        fichaEditando.dados = {};
-      }
-
+      if (editJogador) fichaEditando.jogador = editJogador.value.trim() || fichaEditando.jogador;
+      if (editPersonagem) fichaEditando.personagem = editPersonagem.value.trim() || fichaEditando.jogador;
+      if (editVida) fichaEditando.vida = parseInt(editVida.value) || 0;
+      if (editInic) fichaEditando.iniciativa = parseInt(editInic.value) || 0;
+      if (editDefesa) fichaEditando.defesa = parseInt(editDefesa.value) || 10;
+      if (editMochila) fichaEditando.mochila = editMochila.value;
+      if (editNotas) fichaEditando.notas = editNotas.value;
 
       parametros.forEach(parametro => {
-
-        const campo =
-          document.getElementById(
-            `campo-${parametro.id}`
-          );
-
-
+        const campo = document.getElementById(`campo-${parametro.id}`);
         if (campo) {
-
-          fichaEditando.dados[parametro.id] =
-            campo.value;
-
+          fichaEditando.dados[parametro.id] = campo.value;
         }
-
       });
-
 
       salvarDados();
-
-
       renderFichas();
-
-
-      alert(
-        'Ficha modificada e salva com sucesso!'
-      );
-
+      if (mostrarAlerta) {
+        alert(`Ficha de ${fichaEditando.personagem} atualizada com sucesso!`);
+      }
     }
-
-
-    /* ==================================================
-       EXCLUIR FICHA
-    ================================================== */
 
     function excluirFichaPorId(id) {
+      const ficha = fichas.find(f => f.id === id);
+      if (!ficha) return;
 
-      const ficha =
-        fichas.find(
-          f => f.id === id
-        );
-
-
-      if (!ficha) {
+      if (!confirm(`Deseja realmente excluir a ficha de "${ficha.personagem || ficha.jogador}"?`)) {
         return;
       }
 
-
-      const confirmar =
-        confirm(
-          `Deseja realmente excluir a ficha de ${ficha.jogador}?`
-        );
-
-
-      if (!confirmar) {
-        return;
-      }
-
-
-      fichas =
-        fichas.filter(
-          f => f.id !== id
-        );
-
-
-      if (
-        fichaEditando &&
-        fichaEditando.id === id
-      ) {
-
+      fichas = fichas.filter(f => f.id !== id);
+      if (fichaEditando && fichaEditando.id === id) {
         fichaEditando = null;
-
         fecharEditor();
-
       }
-
 
       salvarDados();
-
       renderFichas();
-
     }
-
 
     function excluirFicha() {
-
-      if (!fichaEditando) {
-        return;
-      }
-
-
-      excluirFichaPorId(
-        fichaEditando.id
-      );
-
+      if (!fichaEditando) return;
+      excluirFichaPorId(fichaEditando.id);
     }
-
-
-    /* ==================================================
-       FECHAR EDITOR
-    ================================================== */
 
     function fecharEditor() {
-
-      const editor =
-        document.getElementById(
-          'ficha-editor'
-        );
-
-
-      if (editor) {
-
-        editor.style.display =
-          'none';
-
-      }
-
-
+      const editor = document.getElementById('ficha-editor');
+      if (editor) editor.style.display = 'none';
       fichaEditando = null;
-
     }
 
-
-    /* ==================================================
-       ESCAPAR HTML
-    ================================================== */
-
-    function escapeHTML(texto) {
-
-      const div =
-        document.createElement('div');
-
-      div.textContent =
-        texto == null
-          ? ''
-          : String(texto);
-
-      return div.innerHTML;
-
+    // Configurações Modal
+    function abrirConfiguracoes() {
+      document.getElementById('settings-modal').classList.add('active');
     }
 
+    function fecharConfiguracoes() {
+      document.getElementById('settings-modal').classList.remove('active');
+    }
 
-    /* ==================================================
-       INICIALIZAÇÃO
-    ================================================== */
+    function fecharConfiguracoesPorFora(e) {
+      if (e.target.id === 'settings-modal') {
+        fecharConfiguracoes();
+      }
+    }
 
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') fecharConfiguracoes();
+    });
+
+    document.addEventListener('DOMContentLoaded', aplicarEstadoSidebar);
+
+    // Init
     window.onload = function () {
-
       aplicarEstadoSidebar();
-
       carregarCampanhas();
-
       renderSeletorCampanha();
-
       carregarDados();
-
       renderParametros();
-
       renderFichas();
-
       carregarCampanhaSidebar();
 
+      // Se abriu via link do Painel do Mestre (ex: fichas.html?id=123)
+      const urlParams = new URLSearchParams(window.location.search);
+      const idParam = urlParams.get('id');
+      if (idParam) {
+        const fichaAlvo = fichas.find(f => String(f.id) === String(idParam));
+        if (fichaAlvo) {
+          editarFicha(fichaAlvo.id);
+        }
+      }
     };
-
   </script>
-
 </body>
-
 </html>

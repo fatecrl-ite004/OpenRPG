@@ -1,76 +1,102 @@
-# OPEN RPG
+# OpenRPG
 
-- **Equipe:** Leandro Andrade dos Santos, Ryan Xavier Paz Corrêa Amaral
-- **Público-alvo:** Comunidade Geek, Mestres e Jogadores de RPG de Mesa (TTRPG)
-- **Tipo de aplicação:** Aplicação Web
-- **Plataforma(s):** Web
-- **Domínio:** Entretenimento
-- **Previsão de entrega:** A definir
-
-## Visão geral
-
-Sistema web para gerenciamento de sessões de RPG com foco em auxiliar Mestres (novatos e experientes) a planejar e conduzir suas mesas, centralizando fichas de personagens, inventários, pontos de vida, anotações de campanha e status em tempo real.
-
-## Problema
-
-Mestres de RPG frequentemente enfrentam dificuldades para manter organizadas as diversas informações de uma campanha (fichas em papel dispersas, controle manual de vida, e histórico de itens). Essa desorganização gera interrupções constantes na narrativa, inconsistências na história e perda de engajamento por parte dos jogadores durante as sessões.
-
-## Solução proposta
-
-O **Open RPG** oferece uma plataforma centralizada e acessível via navegador para organizar e armazenar todos os dados da campanha. O Mestre e os jogadores podem cadastrar personagens, gerenciar itens e atualizar atributos vitais de forma prática. A solução otimiza o fluxo da sessão, permitindo que o Mestre foque no desenvolvimento da narrativa e na experiência do grupo.
+Sistema web para gerenciamento ágil de sessões de RPG de mesa (TTRPG), voltado para a comunidade geek, mestres e jogadores. O objetivo da plataforma é solucionar a desorganização de informações durante as partidas (fichas em papel dispersas, controle manual de vida e interrupções na narrativa), centralizando campanhas, fichas digitais, inventários, anotações e simulação tática de combate em uma interface leve, funcional e acessível diretamente no navegador.
 
 ## Funcionalidades
 
-- **Cadastro** de Mestres e Jogadores.
-- **Gerenciamento de Campanhas:** criação de salas/sessões e associação de participantes.
-- **Ficha Digital de Personagens:** controle de atributos, pontos de vida (HP), recursos e condições.
-- **Gerenciador de Inventário e Itens:** criação, edição e distribuição de itens e equipamentos.
-- ***Painel do Mestre (Dashboard):*** visualização unificada do status de todos os integrantes da mesa.
-- ***Rolador de Dados Integrado:*** suporte a dados poliédricos (D4, D6, D8, D10, D12, D20, D100) com modificadores.
-- **Diário de Sessão / Anotações:** registro de acontecimentos, NPCs e eventos da campanha.
+- **Gerenciamento de Campanhas:** Criação, edição, alternância e isolamento completo de dados entre diferentes campanhas e cenários.
+- **Painel do Mestre:** Cadastro simplificado de jogadores da mesa, rolador de dados poliédricos integrado (d4, d6, d8, d10, d12, d20, d100) e bloco de anotações de sessão com salvamento automático.
+- **Fichas Digitais Parametrizáveis:** Controle de atributos vitais obrigatórios (Vida Máxima, Iniciativa, Defesa/CA e Mochila/Inventário detalhado), além de suporte à criação dinâmica de parâmetros personalizados pelo mestre.
+- **Simulação de Combate:** Rastreador tático de iniciativa e turnos (com avanço automático de rodadas e destaque para o combatente da vez), recrutamento em um clique dos jogadores da campanha, inserção rápida de inimigos/NPCs, ajuste rápido de dano/cura (-5, -1, +1, +5) e alternância instantânea de condições de status (Caído, Atordoado, Sangrando, Envenenado, Cego, Invisível).
 
-## Diferencial / Concorrência
+## Tecnologias utilizadas
 
-- **Concorrentes:** Roll20, Foundry VTT, D&D Beyond e ferramentas genéricas como Notion e Trello.
-- **Diferencial:** Enquanto plataformas como Roll20 e Foundry VTT possuem curva de aprendizado elevada e alto consumo de recursos, e ferramentas como Notion não possuem automações nativas de RPG (como rolagem de dados e atualização de status em tempo real), o Open RPG foca em **simplicidade, leveza e agilidade**, entregando uma interface limpa e focada no que o Mestre precisa consultar durante a partida.
+- **Linguagens:** HTML5, CSS3, JavaScript (ES6+ nativo / Vanilla JS).
+- **Armazenamento:** Web Storage API (`localStorage` para persistência local no navegador).
+- **Hospedagem:** GitHub Pages.
 
-## Inovação / Criatividade
+## Pré-requisitos
 
-- **Experiência do Usuário:** Interface minimalista projetada para minimizar cliques e evitar que o Mestre pause a narrativa para buscar informações.
-- **Acessibilidade Web Direta:** Funciona diretamente no navegador em qualquer dispositivo sem necessidade de downloads ou plugins pesados.
-- **Foco na Agilidade Narrativa:** Organização visual intuitiva que prioriza o ritmo da sessão em vez de grids complexos.
+Antes de executar o projeto localmente, verifique se você possui:
 
-## Escopo do projeto
+- [Git](https://git-scm.com/) instalado no computador (opcional, para clonar o repositório).
+- Um navegador web moderno instalado (Google Chrome, Mozilla Firefox, Microsoft Edge, Safari ou compatíveis).
 
-### Essencial (MVP – obrigatório)
+> Por ser uma aplicação desenvolvida com tecnologias web nativas sem dependências compiladas, **não é obrigatório ter Node.js ou npm instalados** para executar o projeto.
 
-- Exportar/importar dados de forma "portátil"
-- Cadastro de personagens.
-- Criação e listagem de campanhas/sessões.
-- Ficha básica de personagem (nome, classe, nível, HP atual/máximo e atributos).
-- Painel simplificado para o Mestre visualizar a vida e status dos personagens.
+## Instalação e configuração
 
-### Importante (se houver tempo)
+### 1. Obter o código-fonte
 
-- Gerenciador de inventário e equipamentos por personagem.
-- Rolador de dados digital integrado com histórico.
-- Bloco de anotações e registro de NPCs da campanha.
+Clone o repositório e acesse o diretório do projeto:
 
-### Opcional (baixa prioridade)
+```bash
+git clone https://github.com/fatecrl-ite004/OpenRPG.git
+cd OpenRPG
+```
 
-- Exportação e importação de fichas em formato JSON/PDF.
-- Temas visuais personalizáveis (Dark Mode temático).
+### 2. Instalar as dependências
 
-## Planejamento (simplificado)
+Por se tratar de uma aplicação construída puramente com HTML, CSS e JavaScript nativos (*Vanilla JS*), **não há pacotes ou dependências externas a serem instaladas**. Nenhuma etapa de `npm install` é necessária.
 
-| Etapa | Descrição                                                 | Prazo      |
-| ----- | --------------------------------------------------------- | ---------- |
-| 1     | Definição de requisitos, escopo e prototipação de UI      |            |
-| 3     | Integração do Painel do Mestre e controle de inventário   |            |
-| 2     | Desenvolvimento do MVP (Autenticação, Campanhas e Fichas) |            |
-| 4     | Testes de usabilidade, ajustes e correções de bugs        |            |
-| 5     | Entrega final, documentação e apresentação                |            |
+### 3. Configurar o ambiente
 
-## Tecnologias (opcional neste momento)
+Nenhuma configuração de variáveis de ambiente (`.env`) ou banco de dados externo é necessária. Todos os dados são armazenados localmente e de forma isolada por campanha no próprio navegador do usuário através do `localStorage`.
 
-> Pode ser preenchido depois (P2)
+## Execução em ambiente de desenvolvimento
+
+A aplicação pode ser executada de forma simples e direta:
+
+### Opção 1: Abertura direta no navegador
+Dê um duplo clique no arquivo `index.html` ou abra-o em qualquer navegador web.
+
+### Opção 2: Servidor local estático (Recomendado)
+Para uma experiência idêntica à de produção:
+
+- **Via extensão do VS Code:** Utilize a extensão *Live Server*, clicando com o botão direito sobre o arquivo `index.html` e escolhendo **"Open with Live Server"**.
+- **Via Python:**
+  ```bash
+  python -m http.server 3000
+  ```
+  Em seguida, acesse no navegador: `http://localhost:3000/`
+
+## Build para produção
+
+Por ser uma aplicação web estática nativa, o **OpenRPG não necessita de etapas de compilação ou empacotamento** (dispensando ferramentas de build como Vite ou Webpack). Os próprios arquivos-fonte (`index.html`, `combate.html`, `mestre.html`, `fichas.html`, `style.css` e pasta `img/`) já constituem os arquivos prontos para deploy e publicação em qualquer servidor web ou CDN estática.
+
+### Testar a versão de produção localmente
+
+Abra os arquivos em uma janela anônima no navegador para testar o isolamento e persistência das campanhas e fichas no `localStorage` sem interferência de dados anteriores.
+
+## Aplicação publicada
+
+A aplicação está publicada e acessível publicamente via GitHub Pages:
+
+- **Aplicação:** https://fatecrl-ite004.github.io/OpenRPG/
+
+## Estrutura do projeto
+
+```text
+OpenRPG/
+├── img/
+│   └── icon.webp            # Logotipo e ícone oficial da aplicação
+├── combate.html             # Módulo de Simulação de Combate (Iniciativa, turnos e HP tático)
+├── fichas.html              # Módulo de Fichas de Personagem (Vida, Iniciativa, Defesa e Mochila)
+├── index.html               # Página inicial e Gerenciador de Campanhas
+├── mestre.html              # Painel do Mestre (Lista de jogadores, Dados e Anotações)
+├── style.css                # Folha de estilos unificada da aplicação
+├── README-antigo.md         # Registro histórico do README inicial
+├── README-template.md       # Modelo de estrutura fornecido
+└── README.md                # Documentação oficial do projeto
+```
+
+## Equipe
+
+| Integrante | Responsabilidade |
+|---|---|
+| Leandro Andrade dos Santos | Desenvolvedor Fullstack / Documentação e Arquitetura |
+| Ryan Xavier Paz Corrêa Amaral | Desenvolvedor Fullstack / Design e Interface |
+
+## Documentação adicional
+
+Consulte a [Wiki do projeto](https://github.com/fatecrl-ite004/OpenRPG/wiki) para obter informações complementares, como apresentação, requisitos, decisões de projeto, protótipos e outras informações relevantes.
