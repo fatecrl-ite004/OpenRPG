@@ -91,8 +91,6 @@ OpenRPG/
 ├── mestre.html              # Painel do Mestre e Campanhas Unificadas (Jogadores, dados e anotações)
 ├── settings.js              # Módulo compartilhado de Acessibilidade, Áudio e Toasts
 ├── style.css                # Folha de estilos unificada e design system da aplicação
-├── README-antigo.md         # Registro histórico do README inicial
-├── README-template.md       # Modelo de estrutura fornecido
 └── README.md                # Documentação oficial do projeto
 ```
 
