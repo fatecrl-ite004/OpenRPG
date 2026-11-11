@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpenRPG - Simulação de Combate</title>
   <link rel="stylesheet" href="style.css">
+  <script src="settings.js" defer></script>
 </head>
 <body>
   <div class="app-container">
@@ -207,51 +208,70 @@
         <div class="settings-section">
           <div class="settings-section-head">
             <span class="settings-section-title">♿ Opções de Acessibilidade</span>
-            <span class="settings-badge planned">Planejado</span>
+            <span class="settings-badge" style="background: var(--accent-subtle); color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">Ativo</span>
           </div>
           <p class="settings-desc">Recursos pensados para tornar a experiência de mestrar e jogar mais inclusiva e acessível:</p>
           <div class="a11y-list">
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>🔠 Ajuste da Escala de Texto</strong>
-                <span>Amplie o tamanho das fontes (Normal, Médio, Grande) para leitura confortável na mesa</span>
+                <span>Amplie o tamanho das fontes para leitura confortável</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <select id="cfg-escala" class="settings-control-select" onchange="salvarConfiguracao('escala', this.value)">
+                <option value="100">Normal (100%)</option>
+                <option value="medio">Médio (110%)</option>
+                <option value="grande">Grande (125%)</option>
+              </select>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>👁️ Modo de Alto Contraste</strong>
-                <span>Realce de bordas e tipografia reforçada para pessoas com baixa visão</span>
+                <span>Realce de bordas e contraste reforçado para baixa visão</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-contraste" onchange="salvarConfiguracao('altoContraste', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>📖 Fonte Especial para Dislexia</strong>
-                <span>Alternar para a tipografia OpenDyslexic / Lexend facilitando a leitura rápida</span>
+                <span>Alternar para a tipografia Lexend facilitando a leitura rápida</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-dislexia" onchange="salvarConfiguracao('dislexia', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>🛑 Redução de Animações</strong>
-                <span>Desativa transições bruscas de acordo com a preferência do sistema operacional</span>
+                <span>Desativa transições para evitar sobrecarga sensorial</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-animacoes" onchange="salvarConfiguracao('reduzirAnimacoes', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>🔊 Feedback Sonoro de Dados</strong>
-                <span>Sons discretos ao rolar e anúncio do resultado para leitores de tela</span>
+                <span>Sons discretos ao rolar e anúncio falado do resultado</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-som" onchange="salvarConfiguracao('somDados', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>⌨️ Atalhos Rápidos de Teclado</strong>
-                <span>Navegação sem mouse para turnos, rolagem e gerenciamento de combate</span>
+                <span>Combate (Espaço/Setas), Mestre (1 a 7 para dados) e Esc</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-atalhos" onchange="salvarConfiguracao('atalhos', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
           </div>
         </div>
@@ -260,7 +280,7 @@
         <div class="settings-section">
           <div class="settings-section-head">
             <span class="settings-section-title">💾 Backup da Campanha</span>
-            <span class="settings-badge">Em breve</span>
+            <span class="settings-badge" style="background: var(--accent-subtle); color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">Ativo</span>
           </div>
           <p class="settings-desc">Exportação e importação de dados da campanha para portabilidade e segurança.</p>
           <div class="export-box">
@@ -270,9 +290,21 @@
                 Gera um arquivo compacto com fichas, anotações e parâmetros salvos.
               </div>
             </div>
-            <button class="btn-secondary" style="opacity: 0.6; cursor: not-allowed;" title="Funcionalidade em desenvolvimento">
-              📥 Baixar JSON (Em breve)
+            <button class="btn-secondary" onclick="exportarBackupCampanha()" title="Baixar backup da campanha ativa">
+              📥 Baixar JSON
             </button>
+          </div>
+          <div class="export-box" style="margin-top: 8px;">
+            <div>
+              <strong style="font-size: 13px; color: var(--text-main);">Importar JSON de Campanha</strong>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                Restaura fichas, anotações e parâmetros a partir de um backup.
+              </div>
+            </div>
+            <button class="btn-secondary" onclick="document.getElementById('backup-file-input').click()" title="Importar backup de campanha">
+              📤 Importar JSON
+            </button>
+            <input type="file" id="backup-file-input" accept=".json" style="display: none;" onchange="importarBackupCampanha(event)">
           </div>
         </div>
 
@@ -518,6 +550,7 @@
     function rolarInicFast() {
       const dado = Math.floor(Math.random() * 20) + 1;
       document.getElementById('fast-inic').value = dado;
+      if (typeof tocarSomDado === 'function') tocarSomDado(dado);
     }
 
     function adicionarCombatenteManual() {
@@ -605,6 +638,7 @@
         c.inic = Math.floor(Math.random() * 20) + 1;
       });
       reordenarPorIniciativa();
+      if (typeof tocarSomDado === 'function') tocarSomDado('Iniciativas');
     }
 
     function reordenarPorIniciativa() {

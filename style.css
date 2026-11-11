@@ -1,3 +1,5 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap');
+
 :root {
     --bg-app: #0c0f16;
     --bg-sidebar: #11151f;
@@ -32,7 +34,7 @@
     --info: #6366f1;
     --info-hover: #4f46e5;
     
-    /* Bordas mais retas e sólidas - sem cantos excessivamente redondos */
+    /* Bordas mais retas e sÃ³lidas - sem cantos excessivamente redondos */
     --radius-sm: 2px;
     --radius-md: 4px;
     --radius-lg: 6px;
@@ -225,7 +227,7 @@ body {
     border-color: var(--accent);
 }
 
-/* Sidebar Toggle Button in Top Bar (sempre visível e clicável) */
+/* Sidebar Toggle Button in Top Bar (sempre visÃ­vel e clicÃ¡vel) */
 .btn-sidebar-toggle,
 .btn-open-sidebar {
     display: inline-flex;
@@ -420,7 +422,7 @@ button:hover {
 }
 
 /* ==================================================
-   REWORK TOTAL: SIMULAÇÃO DE COMBATE
+   REWORK TOTAL: SIMULAÃ‡ÃƒO DE COMBATE
 ================================================== */
 .combat-layout {
     display: grid;
@@ -1340,4 +1342,96 @@ button:hover {
     .main-content {
         padding: 16px 14px 32px;
     }
+}
+
+/* Settings Controls & Accessibility */
+.settings-control-select {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    outline: none;
+    cursor: pointer;
+}
+.settings-control-select:focus {
+    border-color: var(--border-focus);
+}
+
+.settings-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+}
+.settings-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.settings-switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--border-color);
+    transition: 0.2s;
+    border-radius: 12px;
+}
+.settings-switch .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #fff;
+    transition: 0.2s;
+    border-radius: 50%;
+}
+.settings-switch input:checked + .slider {
+    background-color: var(--accent);
+}
+.settings-switch input:checked + .slider:before {
+    transform: translateX(16px);
+}
+
+body[data-font-scale="medio"] {
+    zoom: 1.1;
+}
+body[data-font-scale="grande"] {
+    zoom: 1.25;
+}
+
+body.high-contrast {
+    --bg-app: #000000;
+    --bg-sidebar: #050505;
+    --bg-panel: #0a0a0a;
+    --bg-card: #121212;
+    --bg-card-hover: #1e1e1e;
+    --bg-input: #000000;
+    --border-color: #ffffff;
+    --border-hover: #ffffff;
+    --text-main: #ffffff;
+    --text-muted: #e2e8f0;
+    --text-subtle: #cbd5e1;
+}
+body.high-contrast * {
+    border-color: #ffffff;
+}
+
+body.dyslexic-font {
+    font-family: 'Lexend', sans-serif !important;
+    letter-spacing: 0.03em;
+    word-spacing: 0.05em;
+    line-height: 1.6;
+}
+
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
 }

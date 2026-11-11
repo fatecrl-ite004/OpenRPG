@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpenRPG - Painel do Mestre</title>
   <link rel="stylesheet" href="style.css">
+  <script src="settings.js" defer></script>
 </head>
 <body>
   <div class="app-container">
@@ -161,51 +162,70 @@
         <div class="settings-section">
           <div class="settings-section-head">
             <span class="settings-section-title">♿ Opções de Acessibilidade</span>
-            <span class="settings-badge planned">Planejado</span>
+            <span class="settings-badge" style="background: var(--accent-subtle); color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">Ativo</span>
           </div>
           <p class="settings-desc">Recursos pensados para tornar a experiência de mestrar e jogar mais inclusiva e acessível:</p>
           <div class="a11y-list">
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>🔠 Ajuste da Escala de Texto</strong>
-                <span>Amplie o tamanho das fontes (Normal, Médio, Grande) para leitura confortável na mesa</span>
+                <span>Amplie o tamanho das fontes para leitura confortável</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <select id="cfg-escala" class="settings-control-select" onchange="salvarConfiguracao('escala', this.value)">
+                <option value="100">Normal (100%)</option>
+                <option value="medio">Médio (110%)</option>
+                <option value="grande">Grande (125%)</option>
+              </select>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>👁️ Modo de Alto Contraste</strong>
-                <span>Realce de bordas e tipografia reforçada para pessoas com baixa visão</span>
+                <span>Realce de bordas e contraste reforçado para baixa visão</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-contraste" onchange="salvarConfiguracao('altoContraste', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>📖 Fonte Especial para Dislexia</strong>
-                <span>Alternar para a tipografia OpenDyslexic / Lexend facilitando a leitura rápida</span>
+                <span>Alternar para a tipografia Lexend facilitando a leitura rápida</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-dislexia" onchange="salvarConfiguracao('dislexia', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>🛑 Redução de Animações</strong>
-                <span>Desativa transições bruscas de acordo com a preferência do sistema operacional</span>
+                <span>Desativa transições para evitar sobrecarga sensorial</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-animacoes" onchange="salvarConfiguracao('reduzirAnimacoes', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>🔊 Feedback Sonoro de Dados</strong>
-                <span>Sons discretos ao rolar e anúncio do resultado para leitores de tela</span>
+                <span>Sons discretos ao rolar e anúncio falado do resultado</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-som" onchange="salvarConfiguracao('somDados', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>⌨️ Atalhos Rápidos de Teclado</strong>
-                <span>Navegação sem mouse para turnos, rolagem e gerenciamento de combate</span>
+                <span>Combate (Espaço/Setas), Mestre (1 a 7 para dados) e Esc</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-atalhos" onchange="salvarConfiguracao('atalhos', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
           </div>
         </div>
@@ -214,7 +234,7 @@
         <div class="settings-section">
           <div class="settings-section-head">
             <span class="settings-section-title">💾 Backup da Campanha</span>
-            <span class="settings-badge">Em breve</span>
+            <span class="settings-badge" style="background: var(--accent-subtle); color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">Ativo</span>
           </div>
           <p class="settings-desc">Exportação e importação de dados da campanha para portabilidade e segurança.</p>
           <div class="export-box">
@@ -224,9 +244,21 @@
                 Gera um arquivo compacto com fichas, anotações e parâmetros salvos.
               </div>
             </div>
-            <button class="btn-secondary" style="opacity: 0.6; cursor: not-allowed;" title="Funcionalidade em desenvolvimento">
-              📥 Baixar JSON (Em breve)
+            <button class="btn-secondary" onclick="exportarBackupCampanha()" title="Baixar backup da campanha ativa">
+              📥 Baixar JSON
             </button>
+          </div>
+          <div class="export-box" style="margin-top: 8px;">
+            <div>
+              <strong style="font-size: 13px; color: var(--text-main);">Importar JSON de Campanha</strong>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                Restaura fichas, anotações e parâmetros a partir de um backup.
+              </div>
+            </div>
+            <button class="btn-secondary" onclick="document.getElementById('backup-file-input').click()" title="Importar backup de campanha">
+              📤 Importar JSON
+            </button>
+            <input type="file" id="backup-file-input" accept=".json" style="display: none;" onchange="importarBackupCampanha(event)">
           </div>
         </div>
 
@@ -326,33 +358,37 @@
         return;
       }
 
-      const jogador = document.getElementById('pj-jogador').value.trim();
-      const personagem = document.getElementById('pj-personagem').value.trim() || jogador;
+      const inputJogador = document.getElementById('pj-jogador');
+      const inputPersonagem = document.getElementById('pj-personagem');
+
+      const jogador = inputJogador.value.trim();
+      const personagem = inputPersonagem.value.trim();
 
       if (!jogador) {
-        alert('Por favor, informe ao menos o nome do jogador.');
+        alert('Por favor, informe o nome do jogador.');
         return;
       }
 
       const parametros = JSON.parse(localStorage.getItem(`openrpg_parametros${campKey}`) || '[]');
-      const dados = {};
-      parametros.forEach(p => { dados[p.id] = ''; });
+      const dadosIniciais = {};
+      parametros.forEach(p => { dadosIniciais[p.id] = ''; });
 
       const fichas = JSON.parse(localStorage.getItem(`openrpg_fichas${campKey}`) || '[]');
       fichas.push({
         id: Date.now(),
         jogador,
-        personagem,
-        vida: 0, // HP será definido pelo mestre ou jogador diretamente na ficha!
+        personagem: personagem || jogador,
+        vida: 0,
         iniciativa: 0,
         defesa: 10,
         mochila: '',
-        dados
+        dados: dadosIniciais
       });
+
       localStorage.setItem(`openrpg_fichas${campKey}`, JSON.stringify(fichas));
-      
-      document.getElementById('pj-jogador').value = '';
-      document.getElementById('pj-personagem').value = '';
+
+      inputJogador.value = '';
+      inputPersonagem.value = '';
       renderJogadores();
     }
 
@@ -365,38 +401,33 @@
     }
 
     function renderJogadores() {
-      const el = document.getElementById('lista-jogadores');
+      const listaEl = document.getElementById('lista-jogadores');
       if (!campAtiva) {
-        el.innerHTML = '<p class="empty-message" style="color: var(--danger);">⚠️ Nenhuma campanha ativa selecionada. <a href="index.html" style="color: var(--accent);">Selecione ou crie uma campanha</a> no Início.</p>';
+        listaEl.innerHTML = `
+          <div style="font-size: 13px; color: var(--danger); padding: 12px 0;">
+            ⚠️ Nenhuma campanha ativa selecionada. <a href="index.html" style="color: var(--accent);">Selecione ou crie uma campanha no Início</a>.
+          </div>
+        `;
         return;
       }
 
       const fichas = JSON.parse(localStorage.getItem(`openrpg_fichas${campKey}`) || '[]');
 
       if (fichas.length === 0) {
-        el.innerHTML = '<p class="empty-message">Nenhum jogador cadastrado ainda nesta campanha. Cadastre acima para gerar a ficha.</p>';
+        listaEl.innerHTML = '<div class="empty-message">Nenhum jogador cadastrado nesta campanha ainda.</div>';
         return;
       }
 
-      el.innerHTML = fichas.map(f => {
-        const hpTexto = f.vida && parseInt(f.vida) > 0
-          ? `<span style="color: #34d399; font-weight: 600;">🩸 Vida: ${f.vida}</span>`
-          : `<span style="color: var(--text-subtle); font-style: italic;">🩸 HP a preencher na ficha</span>`;
-
-        const statsSub = ` • <span style="color: #60a5fa;">🎯 Inic: ${f.iniciativa ?? 0}</span> • <span style="color: #cbd5e1;">🛡️ Def: ${f.defesa ?? 10}</span>`;
-        const mochilaSub = f.mochila && f.mochila.trim()
-          ? `<div style="font-size: 11px; color: var(--text-subtle); margin-top: 2px;">🎒 Mochila: ${escapeHTML(f.mochila.length > 40 ? f.mochila.substring(0, 40) + '...' : f.mochila)}</div>`
-          : '';
-
+      listaEl.innerHTML = fichas.map(f => {
+        const hpNum = parseInt(f.vida) > 0 ? f.vida : 'Não def.';
         return `
           <div class="player-item">
             <div class="player-info">
-              <strong>🗡️ ${escapeHTML(f.personagem || f.jogador)} <span style="font-weight: normal; color: var(--text-muted); font-size: 13px;">(Jogador: ${escapeHTML(f.jogador)})</span></strong>
-              <span style="font-size: 12px;">${hpTexto}${statsSub}</span>
-              ${mochilaSub}
+              <strong>${escapeHTML(f.jogador)}</strong>
+              <span>Personagem: ${escapeHTML(f.personagem || f.jogador)} • 🩸 HP: ${hpNum}</span>
             </div>
             <div style="display: flex; gap: 8px; align-items: center;">
-              <a href="fichas.html?id=${f.id}" class="btn-copy" style="text-decoration: none;" title="Abrir e preencher dados da ficha">📄 Ficha</a>
+              <a href="fichas.html" class="btn-copy" style="text-decoration: none; font-size: 12px; padding: 4px 8px;">📄 Abrir Ficha</a>
               <button class="btn-danger" onclick="removerJogador(${f.id})" title="Remover jogador">✕</button>
             </div>
           </div>
@@ -413,6 +444,7 @@
       const resultado = Math.floor(Math.random() * faces) + 1;
       const el = document.getElementById('dice-result');
       el.innerText = `🎲 d${faces} ➔ ${resultado}`;
+      if (typeof tocarSomDado === 'function') tocarSomDado(resultado);
     }
 
     // Configurações Modal

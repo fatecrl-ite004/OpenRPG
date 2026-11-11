@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpenRPG - Início</title>
   <link rel="stylesheet" href="style.css">
+  <script src="settings.js" defer></script>
 </head>
 <body>
   <div class="app-container">
@@ -67,6 +68,9 @@
       <!-- Campaign Management Area -->
       <section class="section-container" style="max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
         
+        <!-- Input invisível compartilhado para importação de JSON de campanha -->
+        <input type="file" id="import-campanha-input" accept=".json" style="display: none;" onchange="importarBackupCampanha(event)">
+
         <!-- Active Campaign Card -->
         <div id="active-campaign-panel" class="panel" style="display: none; margin-bottom: 0;">
           <div class="panel-title">🎲 Campanha Ativa</div>
@@ -76,7 +80,11 @@
               <p id="display-camp-cenario" style="color: var(--accent); font-size: 13px; font-weight: 600;"></p>
               <p id="display-camp-desc" style="color: var(--text-muted); font-size: 13px; margin-top: 6px;"></p>
             </div>
-            <button onclick="editarCampanhaAtiva()" class="btn-copy">✏️ Editar Campanha</button>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+              <button onclick="editarCampanhaAtiva()" class="btn-copy">✏️ Editar Campanha</button>
+              <button onclick="exportarBackupCampanha()" class="btn-secondary" title="Exportar dados da campanha ativa em formato JSON">📥 Exportar (Campanha Atual)</button>
+              <button onclick="document.getElementById('import-campanha-input').click()" class="btn-secondary" title="Importar arquivo JSON de backup de campanha">📤 Importar</button>
+            </div>
           </div>
 
           <!-- Quick Navigation Actions -->
@@ -98,9 +106,14 @@
 
         <!-- List of All Created Campaigns -->
         <div id="campaigns-list-panel" class="panel" style="margin-bottom: 0;">
-          <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
             <span>📚 Suas Campanhas</span>
-            <button onclick="abrirFormularioCriar()" class="btn-success" style="padding: 6px 14px; font-size: 13px;">+ Nova Campanha</button>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <button onclick="document.getElementById('import-campanha-input').click()" class="btn-secondary" style="padding: 6px 12px; font-size: 13px;" title="Importar backup de campanha via arquivo JSON">
+                📤 Importar Campanha
+              </button>
+              <button onclick="abrirFormularioCriar()" class="btn-success" style="padding: 6px 14px; font-size: 13px;">+ Nova Campanha</button>
+            </div>
           </div>
           <div id="saved-campaigns-list" class="player-list"></div>
         </div>
@@ -115,8 +128,9 @@
             <input id="camp-nome" placeholder="Nome da Campanha (ex: As Minas de Phandelver)">
             <input id="camp-cenario" placeholder="Cenário / Ambientação (ex: Fantasia Medieval, Cyberpunk, Terror)">
             <textarea id="camp-desc" placeholder="Descrição ou premissa da história (opcional)" style="height: 80px; resize: vertical;"></textarea>
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
               <button id="btn-salvar-camp" onclick="salvarCampanha()" class="btn-success">+ Salvar e Ativar</button>
+              <button onclick="document.getElementById('import-campanha-input').click()" type="button" class="btn-secondary" title="Importar campanha salva em arquivo JSON">📤 Importar Backup (JSON)</button>
               <button onclick="fecharFormulario()" class="btn-secondary">Cancelar</button>
             </div>
           </div>
@@ -167,51 +181,70 @@
         <div class="settings-section">
           <div class="settings-section-head">
             <span class="settings-section-title">♿ Opções de Acessibilidade</span>
-            <span class="settings-badge planned">Planejado</span>
+            <span class="settings-badge" style="background: var(--accent-subtle); color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">Ativo</span>
           </div>
           <p class="settings-desc">Recursos pensados para tornar a experiência de mestrar e jogar mais inclusiva e acessível:</p>
           <div class="a11y-list">
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>🔠 Ajuste da Escala de Texto</strong>
-                <span>Amplie o tamanho das fontes (Normal, Médio, Grande) para leitura confortável na mesa</span>
+                <span>Amplie o tamanho das fontes para leitura confortável</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <select id="cfg-escala" class="settings-control-select" onchange="salvarConfiguracao('escala', this.value)">
+                <option value="100">Normal (100%)</option>
+                <option value="medio">Médio (110%)</option>
+                <option value="grande">Grande (125%)</option>
+              </select>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>👁️ Modo de Alto Contraste</strong>
-                <span>Realce de bordas e tipografia reforçada para pessoas com baixa visão</span>
+                <span>Realce de bordas e contraste reforçado para baixa visão</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-contraste" onchange="salvarConfiguracao('altoContraste', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>📖 Fonte Especial para Dislexia</strong>
-                <span>Alternar para a tipografia OpenDyslexic / Lexend facilitando a leitura rápida</span>
+                <span>Alternar para a tipografia Lexend facilitando a leitura rápida</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-dislexia" onchange="salvarConfiguracao('dislexia', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>🛑 Redução de Animações</strong>
-                <span>Desativa transições bruscas de acordo com a preferência do sistema operacional</span>
+                <span>Desativa transições para evitar sobrecarga sensorial</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-animacoes" onchange="salvarConfiguracao('reduzirAnimacoes', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>🔊 Feedback Sonoro de Dados</strong>
-                <span>Sons discretos ao rolar e anúncio do resultado para leitores de tela</span>
+                <span>Sons discretos ao rolar e anúncio falado do resultado</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-som" onchange="salvarConfiguracao('somDados', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
             <div class="a11y-item">
               <div class="a11y-item-info">
                 <strong>⌨️ Atalhos Rápidos de Teclado</strong>
-                <span>Navegação sem mouse para turnos, rolagem e gerenciamento de combate</span>
+                <span>Combate (Espaço/Setas), Mestre (1 a 7 para dados) e Esc</span>
               </div>
-              <span class="a11y-tag">Previsto</span>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-atalhos" onchange="salvarConfiguracao('atalhos', this.checked)">
+                <span class="slider"></span>
+              </label>
             </div>
           </div>
         </div>
@@ -220,7 +253,7 @@
         <div class="settings-section">
           <div class="settings-section-head">
             <span class="settings-section-title">💾 Backup da Campanha</span>
-            <span class="settings-badge">Em breve</span>
+            <span class="settings-badge" style="background: var(--accent-subtle); color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">Ativo</span>
           </div>
           <p class="settings-desc">Exportação e importação de dados da campanha para portabilidade e segurança.</p>
           <div class="export-box">
@@ -230,9 +263,21 @@
                 Gera um arquivo compacto com fichas, anotações e parâmetros salvos.
               </div>
             </div>
-            <button class="btn-secondary" style="opacity: 0.6; cursor: not-allowed;" title="Funcionalidade em desenvolvimento">
-              📥 Baixar JSON (Em breve)
+            <button class="btn-secondary" onclick="exportarBackupCampanha()" title="Baixar backup da campanha ativa">
+              📥 Baixar JSON
             </button>
+          </div>
+          <div class="export-box" style="margin-top: 8px;">
+            <div>
+              <strong style="font-size: 13px; color: var(--text-main);">Importar JSON de Campanha</strong>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                Restaura fichas, anotações e parâmetros a partir de um arquivo JSON.
+              </div>
+            </div>
+            <button class="btn-secondary" onclick="document.getElementById('backup-file-input').click()" title="Importar arquivo JSON de backup">
+              📤 Importar JSON
+            </button>
+            <input type="file" id="backup-file-input" accept=".json" style="display: none;" onchange="importarBackupCampanha(event)">
           </div>
         </div>
 
@@ -431,8 +476,9 @@
                 <strong>${escapeHTML(c.nome)} ${isAtiva ? '<span style="color: var(--accent); font-size: 12px; margin-left: 6px;">(Ativa)</span>' : ''}</strong>
                 <span>${escapeHTML(c.cenario)}${c.desc ? ' • ' + escapeHTML(c.desc) : ''}</span>
               </div>
-              <div style="display:flex; gap: 8px; align-items: center;">
+              <div style="display:flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 ${isAtiva ? '' : `<button class="btn-copy" onclick="selecionarCampanha(${c.id})">Selecionar</button>`}
+                <button class="btn-secondary" onclick="exportarCampanhaPorId(${c.id})" title="Exportar esta campanha em JSON" style="padding: 4px 8px; font-size: 12px;">📥 JSON</button>
                 <button class="btn-danger" onclick="excluirCampanha(${c.id})" title="Excluir campanha">✕</button>
               </div>
             </div>
