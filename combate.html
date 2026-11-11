@@ -22,14 +22,14 @@
         <a id="btn-tab-home" class="nav-btn" href="index.html">
           🏠 Início
         </a>
-        <a id="btn-tab-sessao" class="nav-btn active" href="combate.html">
-          ⚔️ Simulação de Combate
-        </a>
         <a id="btn-tab-mestre" class="nav-btn" href="mestre.html">
           👑 Painel do Mestre
         </a>
         <a id="btn-tab-fichas" class="nav-btn" href="fichas.html">
           📄 Fichas de Personagem
+        </a>
+        <a id="btn-tab-sessao" class="nav-btn active" href="combate.html">
+          ⚔️ Simulação de Combate
         </a>
       </nav>
     </aside>
@@ -374,11 +374,11 @@
           elTop.innerHTML = `🎲 ${escapeHTML(campAtiva.nome)}`;
         }
       } else {
-        if (elSidebar) elSidebar.innerHTML = `<a href="index.html" class="camp-tag" style="text-decoration:none; border-color: var(--danger); color: var(--danger);">⚠️ Selecionar Campanha</a>`;
+        if (elSidebar) elSidebar.innerHTML = `<a href="mestre.html" class="camp-tag" style="text-decoration:none; border-color: var(--danger); color: var(--danger);">⚠️ Selecionar Campanha</a>`;
         if (elTop) {
           elTop.style.display = 'inline-flex';
           elTop.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-          elTop.innerHTML = `<a href="index.html" style="color: var(--danger); text-decoration: none;">⚠️ Nenhuma Campanha Ativa</a>`;
+          elTop.innerHTML = `<a href="mestre.html" style="color: var(--danger); text-decoration: none;">⚠️ Nenhuma Campanha Ativa</a>`;
         }
       }
     }
@@ -439,7 +439,7 @@
       if (!campAtiva) {
         listaEl.innerHTML = `
           <div style="font-size: 11.5px; color: var(--danger); padding: 8px 0;">
-            ⚠️ Nenhuma campanha ativa selecionada. <a href="index.html" style="color: var(--accent);">Selecione no Início</a>.
+            ⚠️ Nenhuma campanha ativa selecionada. <a href="mestre.html" style="color: var(--accent);">Selecione no Painel do Mestre</a>.
           </div>
         `;
         return;

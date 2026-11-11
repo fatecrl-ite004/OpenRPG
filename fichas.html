@@ -22,14 +22,14 @@
         <a id="btn-tab-home" class="nav-btn" href="index.html">
           🏠 Início
         </a>
-        <a id="btn-tab-sessao" class="nav-btn" href="combate.html">
-          ⚔️ Simulação de Combate
-        </a>
         <a id="btn-tab-mestre" class="nav-btn" href="mestre.html">
           👑 Painel do Mestre
         </a>
         <a id="btn-tab-fichas" class="nav-btn active" href="fichas.html">
           📄 Fichas de Personagem
+        </a>
+        <a id="btn-tab-sessao" class="nav-btn" href="combate.html">
+          ⚔️ Simulação de Combate
         </a>
       </nav>
     </aside>
@@ -75,10 +75,10 @@
             <select id="seletor-campanha-ficha" onchange="selecionarCampanhaFicha(this.value)" style="flex: 1; min-width: 220px;">
               <option value="">Selecione uma campanha...</option>
             </select>
-            <a href="index.html" class="btn-secondary" style="text-decoration: none;">⚙️ Gerenciar Campanhas</a>
+            <a href="mestre.html" class="btn-secondary" style="text-decoration: none;">👑 Gerenciar no Painel do Mestre</a>
           </div>
           <div id="aviso-sem-campanha-ficha" style="display: none; margin-top: 12px; color: var(--danger); font-size: 13px;">
-            ⚠️ Nenhuma campanha ativa selecionada. Crie ou selecione uma campanha na página inicial.
+            ⚠️ Nenhuma campanha ativa selecionada. Crie ou selecione uma campanha no <a href="mestre.html" style="color: var(--danger); text-decoration: underline;">Painel do Mestre</a>.
           </div>
         </div>
 
@@ -125,7 +125,11 @@
         <div class="panel">
           <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
             <span>📜 Fichas de Jogadores da Campanha</span>
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <button class="btn-secondary" onclick="document.getElementById('importar-ficha-camp-file').click()" style="font-size: 13px;" title="Importar arquivo JSON de ficha individual para esta campanha">
+                📤 IMPORTAR
+              </button>
+              <input type="file" id="importar-ficha-camp-file" accept=".json" style="display: none;" onchange="importarFichaParaCampanha(event)">
               <a href="mestre.html" class="btn-secondary" style="font-size: 13px; text-decoration: none;">👑 Ir ao Painel do Mestre</a>
             </div>
           </div>
@@ -353,11 +357,11 @@
           elTop.innerHTML = `🎲 ${escapeHTML(campanhaAtiva.nome)}`;
         }
       } else {
-        if (elSidebar) elSidebar.innerHTML = `<a href="index.html" class="camp-tag" style="text-decoration:none; border-color:var(--danger); color:var(--danger);">⚠️ Selecionar Campanha</a>`;
+        if (elSidebar) elSidebar.innerHTML = `<a href="mestre.html" class="camp-tag" style="text-decoration:none; border-color:var(--danger); color:var(--danger);">⚠️ Selecionar Campanha</a>`;
         if (elTop) {
           elTop.style.display = 'inline-flex';
           elTop.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-          elTop.innerHTML = `<a href="index.html" style="color: var(--danger); text-decoration: none;">⚠️ Nenhuma Campanha Ativa</a>`;
+          elTop.innerHTML = `<a href="mestre.html" style="color: var(--danger); text-decoration: none;">⚠️ Nenhuma Campanha Ativa</a>`;
         }
       }
     }
@@ -452,7 +456,7 @@
     ================================================== */
     function criarParametro() {
       if (!campanhaAtiva) {
-        alert('Selecione uma campanha primeiro.');
+        mostrarToast('Selecione uma campanha primeiro.', 'aviso');
         return;
       }
 
@@ -461,7 +465,7 @@
       const tipo = document.getElementById('tipo-parametro').value;
 
       if (!nome) {
-        alert('Digite o nome do parâmetro.');
+        mostrarToast('Digite o nome do parâmetro.', 'aviso');
         return;
       }
 
@@ -569,12 +573,66 @@
             </div>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
               <button class="btn-copy" onclick="editarFicha(${ficha.id})" title="Preencher atributos, vida, iniciativa, defesa e mochila">✏️ Preencher / Editar</button>
+              <button class="btn-secondary" onclick="exportarFichaPorId(${ficha.id})" title="Exportar apenas esta ficha individual em JSON">📥 EXPORTAR</button>
               <button class="btn-success" onclick="enviarFichaParaCombate(${ficha.id})" title="Enviar personagem para simulação de combate">⚔️ Ao Combate</button>
               <button class="btn-danger" onclick="excluirFichaPorId(${ficha.id})" title="Excluir ficha">✕</button>
             </div>
           </div>
         `;
       }).join('');
+    }
+
+    function importarFichaParaCampanha(event) {
+      if (!campanhaAtiva) {
+        mostrarToast('Selecione uma campanha antes de importar uma ficha.', 'aviso');
+        return;
+      }
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const json = JSON.parse(e.target.result);
+          let f = (json.tipo === 'openrpg_ficha_individual' && json.ficha) ? json.ficha : json;
+          if (!f || (!f.jogador && !f.personagem)) {
+            return mostrarToast('Arquivo JSON não possui formato de ficha válido.', 'erro');
+          }
+
+          const novaFicha = {
+            id: Date.now() + Math.floor(Math.random() * 1000),
+            jogador: f.jogador || f.personagem || 'Jogador',
+            personagem: f.personagem || f.jogador || 'Personagem',
+            vida: parseInt(f.vida) || 0,
+            iniciativa: parseInt(f.iniciativa) || 0,
+            defesa: parseInt(f.defesa) || 10,
+            mochila: f.mochila || '',
+            notas: f.notas || '',
+            dados: f.dados || {}
+          };
+
+          if (Array.isArray(f.atributos)) {
+            f.atributos.forEach(a => {
+              novaFicha.dados[a.id || a.nome] = a.valor;
+            });
+          }
+
+          fichas.push(novaFicha);
+          salvarDados();
+          renderFichas();
+          mostrarToast(`Ficha de "${novaFicha.personagem}" importada com sucesso!`, 'sucesso');
+        } catch (err) {
+          mostrarToast('Erro ao ler arquivo JSON: ' + err.message, 'erro');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function exportarFichaPorId(id) {
+      const ficha = fichas.find(f => f.id === id);
+      if (!ficha) return;
+      exportarFichaIndividual(ficha, campanhaAtiva ? campanhaAtiva.nome : '');
     }
 
     function enviarFichaParaCombate(id) {
@@ -734,10 +792,12 @@
         }
       });
 
+      const nomeSalvo = fichaEditando.personagem || fichaEditando.jogador || 'Personagem';
       salvarDados();
       renderFichas();
+      fecharEditor();
       if (mostrarAlerta) {
-        alert(`Ficha de ${fichaEditando.personagem} atualizada com sucesso!`);
+        mostrarToast(`Ficha de "${nomeSalvo}" salva com sucesso!`, 'sucesso');
       }
     }
 

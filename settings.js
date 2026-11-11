@@ -1,4 +1,4 @@
-// OpenRPG - Gerenciador de Configurações, Acessibilidade e Backup
+// OpenRPG - Gerenciador de Configurações, Acessibilidade, Backup e Notificações Customizadas
 
 function obterConfiguracoes() {
   return Object.assign({
@@ -39,23 +39,65 @@ function aplicarConfiguracoes() {
   if (chkAtalhos) chkAtalhos.checked = !!cfg.atalhos;
 }
 
+// Pop-up / Toast customizado do sistema (substitui alerts padrão)
+function mostrarToast(mensagem, tipo = 'sucesso') {
+  let toastContainer = document.getElementById('openrpg-toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'openrpg-toast-container';
+    toastContainer.className = 'openrpg-toast-container';
+    document.body.appendChild(toastContainer);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `openrpg-toast ${tipo}`;
+  const icon = tipo === 'erro' ? '⚠️' : tipo === 'aviso' ? 'ℹ️' : '✓';
+  toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-msg">${mensagem}</span>`;
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('visible');
+  }, 10);
+
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 300);
+  }, 3200);
+}
+
 // Feedback Sonoro e Leitor de Tela para Dados
+let audioCtxGlobal = null;
+function obterAudioContext() {
+  if (!audioCtxGlobal) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) audioCtxGlobal = new AudioContextClass();
+  }
+  if (audioCtxGlobal && audioCtxGlobal.state === 'suspended') {
+    audioCtxGlobal.resume();
+  }
+  return audioCtxGlobal;
+}
+
 function tocarSomDado(resultado) {
   const cfg = obterConfiguracoes();
   if (!cfg.somDados) return;
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    for (let i = 0; i < 4; i++) {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(150 + Math.random() * 180, ctx.currentTime + i * 0.05);
-      gain.gain.setValueAtTime(0.12, ctx.currentTime + i * 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.05 + 0.05);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + i * 0.05);
-      osc.stop(ctx.currentTime + i * 0.05 + 0.06);
+    const ctx = obterAudioContext();
+    if (ctx) {
+      for (let i = 0; i < 4; i++) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(160 + Math.random() * 200, ctx.currentTime + i * 0.05);
+        gain.gain.setValueAtTime(0.14, ctx.currentTime + i * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.05 + 0.06);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + i * 0.05);
+        osc.stop(ctx.currentTime + i * 0.05 + 0.07);
+      }
     }
     if ('speechSynthesis' in window && resultado !== undefined) {
       window.speechSynthesis.cancel();
@@ -70,7 +112,7 @@ function tocarSomDado(resultado) {
 function exportarCampanhaPorId(id) {
   let camps = JSON.parse(localStorage.getItem('openrpg_campanhas') || '[]');
   const camp = camps.find(c => String(c.id) === String(id));
-  if (!camp) return alert('Campanha não encontrada.');
+  if (!camp) return mostrarToast('Campanha não encontrada.', 'erro');
   const backup = {
     versao: '1.0',
     data: new Date().toISOString(),
@@ -86,13 +128,34 @@ function exportarCampanhaPorId(id) {
   a.href = URL.createObjectURL(blob);
   a.download = `openrpg_${(camp.nome || 'campanha').toLowerCase().replace(/\s+/g, '_')}.json`;
   a.click();
+  mostrarToast(`Campanha "${camp.nome}" exportada!`);
 }
 
 // Backup: Exportar Campanha Ativa
 function exportarBackupCampanha() {
   const campAtiva = JSON.parse(localStorage.getItem('openrpg_campanha_ativa') || 'null');
-  if (!campAtiva) return alert('Nenhuma campanha ativa selecionada para exportação.');
+  if (!campAtiva) return mostrarToast('Nenhuma campanha ativa selecionada.', 'aviso');
   exportarCampanhaPorId(campAtiva.id);
+}
+
+// Backup: Exportar Ficha Individual
+function exportarFichaIndividual(ficha, campNome = '') {
+  if (!ficha) return mostrarToast('Ficha inválida para exportação.', 'erro');
+  const payload = {
+    tipo: 'openrpg_ficha_individual',
+    versao: '1.0',
+    data: new Date().toISOString(),
+    origemCampanha: campNome,
+    ficha: ficha
+  };
+  const nomeArquivo = (ficha.personagem || ficha.jogador || 'ficha')
+    .toLowerCase().replace(/[^a-z0-9]/gi, '_');
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ficha_${nomeArquivo}.json`;
+  a.click();
+  mostrarToast(`Ficha "${ficha.personagem || ficha.jogador}" exportada!`);
 }
 
 // Backup: Importar Campanha
@@ -103,7 +166,9 @@ function importarBackupCampanha(event) {
   reader.onload = function(e) {
     try {
       const data = JSON.parse(e.target.result);
-      if (!data.campanha || !data.campanha.id) return alert('Arquivo de backup inválido.');
+      if (!data.campanha || !data.campanha.id) {
+        return mostrarToast('Arquivo de campanha inválido.', 'erro');
+      }
       const camp = data.campanha;
       const id = camp.id;
       let camps = JSON.parse(localStorage.getItem('openrpg_campanhas') || '[]');
@@ -121,10 +186,10 @@ function importarBackupCampanha(event) {
       if (data.combate) localStorage.setItem(`openrpg_combat_sim_${id}`, JSON.stringify(data.combate));
       if (data.combatentesLegado) localStorage.setItem(`openrpg_personagens_${id}`, JSON.stringify(data.combatentesLegado));
 
-      alert(`Campanha "${camp.nome}" importada com sucesso!`);
-      window.location.reload();
+      mostrarToast(`Campanha "${camp.nome}" importada com sucesso!`);
+      setTimeout(() => window.location.reload(), 900);
     } catch (err) {
-      alert('Erro ao importar JSON: ' + err.message);
+      mostrarToast('Erro ao importar JSON: ' + err.message, 'erro');
     }
   };
   reader.readAsText(file);

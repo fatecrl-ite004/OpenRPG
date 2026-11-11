@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenRPG - Minha Ficha de Jogador</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="settings.js" defer></script>
+  <style>
+    .player-stat-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .player-stat-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hp-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .hp-btn {
+      background: var(--bg-card-hover);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hp-btn:hover {
+      border-color: var(--accent);
+      background: var(--border-color);
+    }
+    .attr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .attr-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      position: relative;
+    }
+    .attr-card-del {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: transparent;
+      border: none;
+      color: var(--text-subtle);
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .attr-card-del:hover {
+      color: var(--danger);
+    }
+  </style>
+</head>
+<body>
+  <div class="standalone-container">
+    
+    <!-- Clean Top Header (Sem sidebar e sem vínculos de Mestre) -->
+    <header class="standalone-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="img/icon.webp" alt="OpenRPG" style="width: 32px; height: 32px; object-fit: contain;">
+        <span style="font-size: 17px; font-weight: 700; color: var(--text-main);">OpenRPG • Área do Jogador</span>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <a href="index.html" class="btn-secondary" style="text-decoration: none; padding: 6px 12px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+          🏠 Voltar para Home
+        </a>
+        <button class="btn-settings" onclick="abrirConfiguracoes()" title="Configurações e Acessibilidade">
+          ⚙️ <span class="btn-settings-text">Configurações</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="standalone-content">
+      
+      <!-- Header & Action Toolbar -->
+      <div class="panel" style="border-top: 3px solid var(--accent); margin-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 style="font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+              🗡️ Minha Ficha de Personagem
+            </h2>
+            <p style="font-size: 13px; color: var(--text-muted);">
+              Sua ficha individual salva automaticamente no seu navegador. Importe ou exporte seu JSON a qualquer momento.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <button class="btn-success" onclick="salvarFichaJogador()" title="Salvar ficha localmente">
+              💾 Salvar Ficha
+            </button>
+            <button class="btn-primary" onclick="exportarFichaJogador()" title="Baixar apenas esta ficha em arquivo JSON">
+              📥 Exportar JSON
+            </button>
+            <button class="btn-secondary" onclick="document.getElementById('importar-ficha-file').click()" title="Importar arquivo JSON de ficha">
+              📤 Importar JSON
+            </button>
+            <input type="file" id="importar-ficha-file" accept=".json" style="display: none;" onchange="importarFichaJogador(event)">
+            <button class="btn-secondary" onclick="novaFichaJogador()" title="Criar uma nova ficha em branco">
+              ✨ Nova Ficha
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        
+        <!-- 1. Identificação do Personagem -->
+        <div class="panel">
+          <div class="panel-title">👤 Identificação</div>
+          <div class="form-grid" style="margin-top: 10px;">
+            <div style="flex: 1 1 200px;">
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">Nome do Jogador</label>
+              <input id="f-jogador" type="text" placeholder="Seu nome real ou apelido" style="width: 100%;">
+            </div>
+            <div style="flex: 1 1 200px;">
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">Nome do Personagem *</label>
+              <input id="f-personagem" type="text" placeholder="Ex: Valerius o Bravo" style="width: 100%;">
+            </div>
+            <div style="flex: 1 1 180px;">
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">Classe / Raça / Nível</label>
+              <input id="f-classe" type="text" placeholder="Ex: Guerreiro Humano Nv 3" style="width: 100%;">
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Estatísticas Principais de Combate -->
+        <div class="panel">
+          <div class="panel-title">⚔️ Estatísticas Vitais & Combate</div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 10px;">
+            
+            <!-- HP Máximo -->
+            <div class="player-stat-box" style="border-left: 3px solid #10b981;">
+              <span class="player-stat-label" style="color: #34d399;">🩸 Vida Máxima (HP)</span>
+              <input id="f-vida-max" type="number" min="0" placeholder="Ex: 28" oninput="sincronizarVidaMax()" style="width: 100%; font-size: 15px; font-weight: 700;">
+            </div>
+
+            <!-- HP Atual -->
+            <div class="player-stat-box" style="border-left: 3px solid #34d399;">
+              <span class="player-stat-label" style="color: #34d399;">💚 Vida Atual</span>
+              <input id="f-vida-atual" type="number" placeholder="Ex: 28" style="width: 100%; font-size: 15px; font-weight: 700;">
+              <div class="hp-controls">
+                <button class="hp-btn" onclick="alterarHP(-5)" title="-5 HP">-5</button>
+                <button class="hp-btn" onclick="alterarHP(-1)" title="-1 HP">-1</button>
+                <button class="hp-btn" onclick="alterarHP(1)" title="+1 HP">+1</button>
+                <button class="hp-btn" onclick="alterarHP(5)" title="+5 HP">+5</button>
+                <button class="hp-btn" onclick="restaurarHPFull()" title="Restaurar HP Máximo" style="width: auto; padding: 0 6px; font-size: 11px;">Max</button>
+              </div>
+            </div>
+
+            <!-- Defesa / CA -->
+            <div class="player-stat-box" style="border-left: 3px solid #94a3b8;">
+              <span class="player-stat-label" style="color: #e2e8f0;">🛡️ Defesa (CA)</span>
+              <input id="f-defesa" type="number" min="0" placeholder="Ex: 15" style="width: 100%; font-size: 15px; font-weight: 700;">
+            </div>
+
+            <!-- Iniciativa -->
+            <div class="player-stat-box" style="border-left: 3px solid #3b82f6;">
+              <span class="player-stat-label" style="color: #60a5fa;">🎯 Iniciativa</span>
+              <input id="f-iniciativa" type="number" placeholder="Ex: 12" style="width: 100%; font-size: 15px; font-weight: 700;">
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3. Atributos & Modificadores -->
+        <div class="panel">
+          <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <span>📊 Atributos & Perícias</span>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-secondary" onclick="adicionarAtributoPrompt()" style="font-size: 12px; padding: 4px 10px;">
+                + Adicionar Atributo
+              </button>
+              <button class="btn-secondary" onclick="carregarAtributosPadrao()" style="font-size: 12px; padding: 4px 10px;">
+                🔄 D&D / d20 Padrão
+              </button>
+            </div>
+          </div>
+          <p class="panel-subtitle">Personalize os atributos conforme o sistema da sua mesa (ex: FOR, DES, CON, INT, SAB, CAR).</p>
+          <div id="container-atributos" class="attr-grid"></div>
+        </div>
+
+        <!-- 4. Mochila & Inventário -->
+        <div class="panel">
+          <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--rpg-gold);">🎒 Mochila / Inventário</span>
+            <span style="font-size: 11px; color: var(--text-subtle);">O que você carrega consigo</span>
+          </div>
+          <p class="panel-subtitle">Armas, armaduras, consumíveis, moedas, ferramentas e pertences.</p>
+          <textarea id="f-mochila" style="width: 100%; height: 110px; resize: vertical; line-height: 1.45; font-family: inherit; margin-top: 8px;" placeholder="Ex: Espada longa +1, Escudo de madeira, Armadura de cota de malha, 3 Poções de cura leve, 45 Moedas de ouro, Tocha (3), Corda de 15m..."></textarea>
+        </div>
+
+        <!-- 5. Habilidades, Magias e Anotações -->
+        <div class="panel">
+          <div class="panel-title">📝 Habilidades, Magias & Histórico</div>
+          <p class="panel-subtitle">Anotações do jogador, magias conhecidas, características de classe e histórico de aventura.</p>
+          <textarea id="f-notas" style="width: 100%; height: 120px; resize: vertical; line-height: 1.45; font-family: inherit; margin-top: 8px;" placeholder="Talentos, magias preparadas, arquétipo, anotações de NPCs importantes, objetivos de campanha..."></textarea>
+        </div>
+
+        <!-- 6. Rolador de Dados Rápido do Jogador -->
+        <div class="panel">
+          <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>🎲 Rolador de Dados</span>
+            <span id="player-dice-result" style="font-size: 15px; font-weight: 700; color: var(--accent);"></span>
+          </div>
+          <p class="panel-subtitle">Role dados com 1 clique ou use as teclas 1 a 7 do teclado.</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+            <button class="dice-btn" onclick="rolarDadoJogador(4)">d4</button>
+            <button class="dice-btn" onclick="rolarDadoJogador(6)">d6</button>
+            <button class="dice-btn" onclick="rolarDadoJogador(8)">d8</button>
+            <button class="dice-btn" onclick="rolarDadoJogador(10)">d10</button>
+            <button class="dice-btn" onclick="rolarDadoJogador(12)">d12</button>
+            <button class="dice-btn" onclick="rolarDadoJogador(20)" style="border-color: var(--accent); color: var(--accent); font-weight: 700;">d20</button>
+            <button class="dice-btn" onclick="rolarDadoJogador(100)">d100</button>
+          </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0 24px; flex-wrap: wrap; gap: 10px;">
+          <a href="index.html" class="btn-secondary" style="text-decoration: none;">
+            🏠 Voltar para Home
+          </a>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-primary" onclick="exportarFichaJogador()">
+              📥 Exportar Ficha (.json)
+            </button>
+            <button class="btn-success" onclick="salvarFichaJogador()">
+              💾 Salvar Ficha
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal de Configurações -->
+  <div id="settings-modal" class="modal-overlay" onclick="fecharConfiguracoesPorFora(event)">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>⚙️ Configurações</h3>
+        <button class="btn-close-modal" onclick="fecharConfiguracoes()">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Opção 1: Tema -->
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-section-title">🎨 Tema Visual</span>
+            <span class="settings-badge">Em breve</span>
+          </div>
+          <p class="settings-desc">Personalização da paleta visual da interface para diferentes cenários de jogo.</p>
+          <div class="theme-preview-grid">
+            <div class="theme-card-option current">
+              <strong>🌑 Dark Obsidian</strong>
+              <span>Tema escuro focado em contraste e clareza (Ativo)</span>
+            </div>
+            <div class="theme-card-option">
+              <strong>📜 Pergaminho Fantasia</strong>
+              <span>Tons terrosos e estética de tomo medieval</span>
+            </div>
+            <div class="theme-card-option">
+              <strong>🌆 Cyberpunk Night</strong>
+              <span>Tons de azul profundo e detalhes ciberpunk</span>
+            </div>
+            <div class="theme-card-option">
+              <strong>⚔️ Grimdark Monocromo</strong>
+              <span>Cinza e grafite com alto foco funcional</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opção 2: Acessibilidade -->
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-section-title">♿ Opções de Acessibilidade</span>
+            <span class="settings-badge" style="background: var(--accent-subtle); color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">Ativo</span>
+          </div>
+          <p class="settings-desc">Recursos pensados para tornar a experiência de mestrar e jogar mais inclusiva e acessível:</p>
+          <div class="a11y-list">
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>🔠 Ajuste da Escala de Texto</strong>
+                <span>Amplie o tamanho das fontes para leitura confortável</span>
+              </div>
+              <select id="cfg-escala" class="settings-control-select" onchange="salvarConfiguracao('escala', this.value)">
+                <option value="100">Normal (100%)</option>
+                <option value="medio">Médio (110%)</option>
+                <option value="grande">Grande (125%)</option>
+              </select>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>👁️ Modo de Alto Contraste</strong>
+                <span>Realce de bordas e contraste reforçado para baixa visão</span>
+              </div>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-contraste" onchange="salvarConfiguracao('altoContraste', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>📖 Fonte Especial para Dislexia</strong>
+                <span>Alternar para a tipografia Lexend facilitando a leitura rápida</span>
+              </div>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-dislexia" onchange="salvarConfiguracao('dislexia', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>🛑 Redução de Animações</strong>
+                <span>Desativa transições para evitar sobrecarga sensorial</span>
+              </div>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-animacoes" onchange="salvarConfiguracao('reduzirAnimacoes', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>🔊 Feedback Sonoro de Dados</strong>
+                <span>Sons discretos ao rolar e anúncio falado do resultado</span>
+              </div>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-som" onchange="salvarConfiguracao('somDados', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="a11y-item">
+              <div class="a11y-item-info">
+                <strong>⌨️ Atalhos Rápidos de Teclado</strong>
+                <span>Rolagem de dados (1 a 7) e Esc</span>
+              </div>
+              <label class="settings-switch">
+                <input type="checkbox" id="cfg-atalhos" onchange="salvarConfiguracao('atalhos', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="fecharConfiguracoes()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'openrpg_jogador_ficha';
+
+    let fichaAtual = {
+      jogador: '',
+      personagem: '',
+      classe: '',
+      vida: 20,
+      vidaAtual: 20,
+      defesa: 12,
+      iniciativa: 10,
+      mochila: '',
+      notas: '',
+      atributos: [
+        { id: 'for', nome: 'Força (FOR)', valor: '10' },
+        { id: 'des', nome: 'Destreza (DES)', valor: '10' },
+        { id: 'con', nome: 'Constituição (CON)', valor: '10' },
+        { id: 'int', nome: 'Inteligência (INT)', valor: '10' },
+        { id: 'sab', nome: 'Sabedoria (SAB)', valor: '10' },
+        { id: 'car', nome: 'Carisma (CAR)', valor: '10' }
+      ]
+    };
+
+    function escapeHTML(texto) {
+      const div = document.createElement('div');
+      div.textContent = texto == null ? '' : String(texto);
+      return div.innerHTML;
+    }
+
+    // Carregar Ficha Salva
+    function carregarFichaLocal() {
+      const salvo = localStorage.getItem(STORAGE_KEY);
+      if (salvo) {
+        try {
+          const dados = JSON.parse(salvo);
+          if (dados && typeof dados === 'object') {
+            normalizarFicha(dados);
+          }
+        } catch (e) {
+          console.warn('Erro ao carregar ficha salva:', e);
+        }
+      }
+      preencherFormulario();
+    }
+
+    function normalizarFicha(dados) {
+      fichaAtual.jogador = dados.jogador || '';
+      fichaAtual.personagem = dados.personagem || '';
+      fichaAtual.classe = dados.classe || '';
+      fichaAtual.vida = parseInt(dados.vida) || 0;
+      fichaAtual.vidaAtual = dados.vidaAtual !== undefined ? parseInt(dados.vidaAtual) : fichaAtual.vida;
+      fichaAtual.defesa = dados.defesa !== undefined ? parseInt(dados.defesa) : 10;
+      fichaAtual.iniciativa = dados.iniciativa !== undefined ? parseInt(dados.iniciativa) : 0;
+      fichaAtual.mochila = dados.mochila || '';
+      fichaAtual.notas = dados.notas || '';
+
+      if (Array.isArray(dados.atributos) && dados.atributos.length > 0) {
+        fichaAtual.atributos = dados.atributos;
+      } else if (dados.dados && typeof dados.dados === 'object') {
+        fichaAtual.atributos = Object.entries(dados.dados).map(([k, v]) => ({
+          id: k,
+          nome: k.toUpperCase(),
+          valor: String(v)
+        }));
+      }
+    }
+
+    function preencherFormulario() {
+      document.getElementById('f-jogador').value = fichaAtual.jogador || '';
+      document.getElementById('f-personagem').value = fichaAtual.personagem || '';
+      document.getElementById('f-classe').value = fichaAtual.classe || '';
+      document.getElementById('f-vida-max').value = fichaAtual.vida || '';
+      document.getElementById('f-vida-atual').value = fichaAtual.vidaAtual !== undefined ? fichaAtual.vidaAtual : (fichaAtual.vida || '');
+      document.getElementById('f-defesa').value = fichaAtual.defesa ?? 10;
+      document.getElementById('f-iniciativa').value = fichaAtual.iniciativa ?? 0;
+      document.getElementById('f-mochila').value = fichaAtual.mochila || '';
+      document.getElementById('f-notas').value = fichaAtual.notas || '';
+      renderAtributos();
+    }
+
+    function lerFormulario() {
+      fichaAtual.jogador = document.getElementById('f-jogador').value.trim();
+      fichaAtual.personagem = document.getElementById('f-personagem').value.trim();
+      fichaAtual.classe = document.getElementById('f-classe').value.trim();
+      fichaAtual.vida = parseInt(document.getElementById('f-vida-max').value) || 0;
+      fichaAtual.vidaAtual = parseInt(document.getElementById('f-vida-atual').value) || 0;
+      fichaAtual.defesa = parseInt(document.getElementById('f-defesa').value) || 10;
+      fichaAtual.iniciativa = parseInt(document.getElementById('f-iniciativa').value) || 0;
+      fichaAtual.mochila = document.getElementById('f-mochila').value;
+      fichaAtual.notas = document.getElementById('f-notas').value;
+
+      fichaAtual.atributos.forEach(attr => {
+        const input = document.getElementById(`attr-val-${attr.id}`);
+        if (input) attr.valor = input.value;
+      });
+    }
+
+    function salvarFichaJogador(notificar = true) {
+      lerFormulario();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(fichaAtual));
+      if (notificar) {
+        const nome = fichaAtual.personagem || fichaAtual.jogador || 'Personagem';
+        mostrarToast(`Ficha de "${nome}" salva com sucesso!`, 'sucesso');
+      }
+    }
+
+    function exportarFichaJogador() {
+      lerFormulario();
+      salvarFichaJogador(false);
+      const payloadFicha = {
+        id: Date.now(),
+        jogador: fichaAtual.jogador,
+        personagem: fichaAtual.personagem,
+        classe: fichaAtual.classe,
+        vida: fichaAtual.vida,
+        vidaAtual: fichaAtual.vidaAtual,
+        defesa: fichaAtual.defesa,
+        iniciativa: fichaAtual.iniciativa,
+        mochila: fichaAtual.mochila,
+        notas: fichaAtual.notas,
+        atributos: fichaAtual.atributos,
+        dados: fichaAtual.atributos.reduce((acc, a) => {
+          acc[a.id || a.nome] = a.valor;
+          return acc;
+        }, {})
+      };
+      exportarFichaIndividual(payloadFicha);
+    }
+
+    function importarFichaJogador(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const json = JSON.parse(e.target.result);
+          let ficha = null;
+          if (json.tipo === 'openrpg_ficha_individual' && json.ficha) {
+            ficha = json.ficha;
+          } else if (json.personagem || json.jogador) {
+            ficha = json;
+          } else if (Array.isArray(json.fichas) && json.fichas.length > 0) {
+            ficha = json.fichas[0];
+          } else {
+            return mostrarToast('Arquivo JSON não possui formato de ficha válido.', 'erro');
+          }
+
+          normalizarFicha(ficha);
+          preencherFormulario();
+          salvarFichaJogador(false);
+          mostrarToast(`Ficha de "${fichaAtual.personagem || fichaAtual.jogador}" importada com sucesso!`, 'sucesso');
+        } catch (err) {
+          mostrarToast('Erro ao ler arquivo JSON: ' + err.message, 'erro');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function novaFichaJogador() {
+      if (!confirm('Deseja iniciar uma nova ficha em branco?')) return;
+      fichaAtual = {
+        jogador: '',
+        personagem: '',
+        classe: '',
+        vida: 20,
+        vidaAtual: 20,
+        defesa: 10,
+        iniciativa: 10,
+        mochila: '',
+        notas: '',
+        atributos: [
+          { id: 'for', nome: 'Força (FOR)', valor: '10' },
+          { id: 'des', nome: 'Destreza (DES)', valor: '10' },
+          { id: 'con', nome: 'Constituição (CON)', valor: '10' },
+          { id: 'int', nome: 'Inteligência (INT)', valor: '10' },
+          { id: 'sab', nome: 'Sabedoria (SAB)', valor: '10' },
+          { id: 'car', nome: 'Carisma (CAR)', valor: '10' }
+        ]
+      };
+      preencherFormulario();
+      salvarFichaJogador(false);
+      mostrarToast('Nova ficha criada!', 'sucesso');
+    }
+
+    // Atributos
+    function renderAtributos() {
+      const container = document.getElementById('container-atributos');
+      if (!container) return;
+
+      if (!fichaAtual.atributos || fichaAtual.atributos.length === 0) {
+        container.innerHTML = '<p class="empty-message" style="grid-column: 1/-1;">Nenhum atributo cadastrado. Clique em "+ Adicionar Atributo" acima.</p>';
+        return;
+      }
+
+      container.innerHTML = fichaAtual.atributos.map(attr => `
+        <div class="attr-card">
+          <button class="attr-card-del" onclick="removerAtributo('${attr.id}')" title="Remover atributo">✕</button>
+          <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600; padding-right: 14px;">
+            ${escapeHTML(attr.nome)}
+          </label>
+          <input id="attr-val-${attr.id}" type="text" value="${escapeHTML(attr.valor ?? '')}" style="width: 100%; font-weight: 600;">
+        </div>
+      `).join('');
+    }
+
+    function adicionarAtributoPrompt() {
+      const nome = prompt('Nome do novo atributo ou perícia (ex: Sanidade, Mana, Percepção):');
+      if (!nome || !nome.trim()) return;
+      const id = 'attr_' + Date.now();
+      fichaAtual.atributos.push({ id, nome: nome.trim(), valor: '10' });
+      renderAtributos();
+      mostrarToast(`Atributo "${nome.trim()}" adicionado!`);
+    }
+
+    function removerAtributo(id) {
+      fichaAtual.atributos = fichaAtual.atributos.filter(a => a.id !== id);
+      renderAtributos();
+    }
+
+    function carregarAtributosPadrao() {
+      fichaAtual.atributos = [
+        { id: 'for', nome: 'Força (FOR)', valor: '10' },
+        { id: 'des', nome: 'Destreza (DES)', valor: '10' },
+        { id: 'con', nome: 'Constituição (CON)', valor: '10' },
+        { id: 'int', nome: 'Inteligência (INT)', valor: '10' },
+        { id: 'sab', nome: 'Sabedoria (SAB)', valor: '10' },
+        { id: 'car', nome: 'Carisma (CAR)', valor: '10' }
+      ];
+      renderAtributos();
+      mostrarToast('Atributos D&D padrão carregados!');
+    }
+
+    // Controles de HP
+    function alterarHP(delta) {
+      const inp = document.getElementById('f-vida-atual');
+      let val = (parseInt(inp.value) || 0) + delta;
+      inp.value = val;
+      salvarFichaJogador(false);
+      mostrarToast(`Vida atual: ${val} HP`);
+    }
+
+    function restaurarHPFull() {
+      const max = parseInt(document.getElementById('f-vida-max').value) || 0;
+      document.getElementById('f-vida-atual').value = max;
+      salvarFichaJogador(false);
+      mostrarToast(`Vida restaurada ao máximo (${max} HP)!`, 'sucesso');
+    }
+
+    function sincronizarVidaMax() {
+      const max = parseInt(document.getElementById('f-vida-max').value) || 0;
+      const atualInp = document.getElementById('f-vida-atual');
+      if (!atualInp.value || parseInt(atualInp.value) === 0) {
+        atualInp.value = max;
+      }
+    }
+
+    // Rolador de Dados
+    function rolarDadoJogador(faces) {
+      const resultado = Math.floor(Math.random() * faces) + 1;
+      const display = document.getElementById('player-dice-result');
+      if (display) display.textContent = `d${faces} = ${resultado}`;
+      if (typeof tocarSomDado === 'function') tocarSomDado(resultado);
+      mostrarToast(`d${faces}: resultado ${resultado}`);
+    }
+
+    function rolarDado(faces) {
+      rolarDadoJogador(faces);
+    }
+
+    function abrirConfiguracoes() {
+      document.getElementById('settings-modal').classList.add('active');
+    }
+    function fecharConfiguracoes() {
+      document.getElementById('settings-modal').classList.remove('active');
+    }
+    function fecharConfiguracoesPorFora(e) {
+      if (e.target.id === 'settings-modal') fecharConfiguracoes();
+    }
+
+    document.addEventListener('DOMContentLoaded', carregarFichaLocal);
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenRPG - Painel do Mestre</title>
+  <title>OpenRPG - Painel do Mestre & Campanhas</title>
   <link rel="stylesheet" href="style.css">
   <script src="settings.js" defer></script>
 </head>
@@ -22,14 +22,14 @@
         <a id="btn-tab-home" class="nav-btn" href="index.html">
           🏠 Início
         </a>
-        <a id="btn-tab-sessao" class="nav-btn" href="combate.html">
-          ⚔️ Simulação de Combate
-        </a>
         <a id="btn-tab-mestre" class="nav-btn active" href="mestre.html">
           👑 Painel do Mestre
         </a>
         <a id="btn-tab-fichas" class="nav-btn" href="fichas.html">
           📄 Fichas de Personagem
+        </a>
+        <a id="btn-tab-sessao" class="nav-btn" href="combate.html">
+          ⚔️ Simulação de Combate
         </a>
       </nav>
     </aside>
@@ -45,7 +45,7 @@
             ☰ Menu
           </button>
           <div class="top-page-badge">
-            👑 Painel do Mestre
+            👑 Painel do Mestre & Campanhas
           </div>
         </div>
         <div class="top-nav-right">
@@ -56,24 +56,83 @@
         </div>
       </header>
 
-      <!-- Master Panel Header -->
-      <section class="section-container">
+      <section class="section-container" style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- Header -->
         <div class="section-header">
           <h2>👑 Painel do Mestre</h2>
-          <p>Organize seus jogadores, registre anotações de sessão e faça rolagens rápidas.</p>
+          <p>Central de comando do mestre: gerencie suas campanhas, cadastre os jogadores da mesa, consulte anotações e role dados.</p>
         </div>
 
+        <!-- Input invisível para importação de backup de campanha -->
+        <input type="file" id="import-campanha-input" accept=".json" style="display: none;" onchange="importarBackupCampanha(event)">
+
+        <!-- 1. Seção Unificada de Campanhas -->
+        <div class="panel" style="border-top: 3px solid var(--rpg-gold);">
+          
+          <!-- Banner Campanha Ativa -->
+          <div id="active-campaign-panel">
+            <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <span>🎲 Campanha Ativa</span>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="abrirFormularioCriar()" class="btn-success" style="font-size: 13px; padding: 5px 12px;">+ Nova Campanha</button>
+                <button onclick="document.getElementById('import-campanha-input').click()" class="btn-secondary" style="font-size: 13px; padding: 5px 12px;" title="Importar backup de campanha via arquivo JSON">📤 Importar Campanha</button>
+              </div>
+            </div>
+
+            <div id="box-campanha-ativa" class="campaign-active-box" style="margin-top: 10px;">
+              <div>
+                <h3 id="display-camp-nome" style="font-size: 18px; margin-bottom: 4px; color: var(--text-main);"></h3>
+                <p id="display-camp-cenario" style="color: var(--accent); font-size: 13px; font-weight: 600;"></p>
+                <p id="display-camp-desc" style="color: var(--text-muted); font-size: 13px; margin-top: 6px;"></p>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                <button onclick="editarCampanhaAtiva()" class="btn-copy">✏️ Editar Detalhes</button>
+                <button onclick="exportarBackupCampanha()" class="btn-secondary" title="Exportar dados da campanha ativa em JSON">📥 Exportar Backup</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formulário Criar/Editar Campanha (Oculto por padrão) -->
+          <div id="create-campaign-panel" style="display: none; margin-top: 16px; padding: 16px; background: var(--bg-card); border: 1px solid var(--accent); border-radius: var(--radius-sm);">
+            <div id="form-camp-title" class="panel-title" style="font-size: 15px; margin-bottom: 4px;">✨ Criar Nova Campanha</div>
+            <p id="form-camp-desc" class="panel-subtitle" style="margin-bottom: 12px;">Preencha os dados abaixo para salvar e isolar seus dados.</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <input id="camp-nome" placeholder="Nome da Campanha (ex: As Minas de Phandelver)">
+              <input id="camp-cenario" placeholder="Cenário / Ambientação (ex: Fantasia Medieval, Cyberpunk, Terror)">
+              <textarea id="camp-desc" placeholder="Descrição ou premissa da história (opcional)" style="height: 70px; resize: vertical;"></textarea>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 4px;">
+                <button id="btn-salvar-camp" onclick="salvarCampanha()" class="btn-success">+ Salvar e Ativar</button>
+                <button onclick="fecharFormulario()" class="btn-secondary">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lista de Campanhas Cadastradas -->
+          <div id="campaigns-list-panel" style="margin-top: 16px;">
+            <div style="font-size: 12.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+              📚 Todas as Campanhas Salvas
+            </div>
+            <div id="saved-campaigns-list" class="player-list"></div>
+          </div>
+
+        </div>
+
+        <!-- 2. Grid do Mestre: Jogadores da Mesa & (Notas + Dados) -->
         <div class="mestre-grid">
           
           <!-- Players Management -->
           <div class="panel">
-            <div class="panel-title">👥 Jogadores da Mesa</div>
+            <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+              <span>👥 Jogadores da Mesa</span>
+              <a href="fichas.html" class="btn-secondary" style="font-size: 12px; padding: 4px 8px; text-decoration: none;">📄 Ver Todas as Fichas</a>
+            </div>
             <p class="panel-subtitle">
-              Cadastre os jogadores da mesa. Os atributos e pontos de vida (HP) são preenchidos exclusivamente na ficha.
+              Cadastre os participantes da campanha ativa. Vida e atributos completos são editados na página de fichas.
             </p>
 
-            <!-- Creation Form without HP -->
-            <div class="form-grid" style="margin-bottom: 14px;">
+            <!-- Creation Form -->
+            <div class="form-grid" style="margin-bottom: 14px; margin-top: 8px;">
               <input id="pj-jogador" placeholder="Nome do Jogador (ex: Lucas)">
               <input id="pj-personagem" placeholder="Nome do Personagem (ex: Sir Kenneth)">
               <button onclick="adicionarJogador()" class="btn-success">+ Cadastrar Jogador</button>
@@ -94,10 +153,10 @@
                 <button class="dice-btn" onclick="rolarDado(8)">d8</button>
                 <button class="dice-btn" onclick="rolarDado(10)">d10</button>
                 <button class="dice-btn" onclick="rolarDado(12)">d12</button>
-                <button class="dice-btn" onclick="rolarDado(20)">d20</button>
+                <button class="dice-btn" onclick="rolarDado(20)" style="border-color: var(--accent); color: var(--accent); font-weight: 700;">d20</button>
                 <button class="dice-btn" onclick="rolarDado(100)">d100</button>
               </div>
-              <div id="dice-result" class="dice-result">Clique em um dado para rolar</div>
+              <div id="dice-result" class="dice-result">Clique em um dado para rolar ou use 1-7</div>
             </div>
 
             <!-- GM Session Notes -->
@@ -117,6 +176,7 @@
           </div>
 
         </div>
+
       </section>
 
     </main>
@@ -271,8 +331,13 @@
 
   <script>
     // State
-    const campAtiva = JSON.parse(localStorage.getItem('openrpg_campanha_ativa') || 'null');
-    const campKey = campAtiva ? `_${campAtiva.id}` : '';
+    let campanhas = [];
+    let campAtiva = null;
+    let editandoCampId = null;
+
+    function getCampKey() {
+      return campAtiva ? `_${campAtiva.id}` : '';
+    }
 
     function escapeHTML(texto) {
       const div = document.createElement('div');
@@ -306,8 +371,7 @@
       if (saved !== null) {
         sidebar.classList.toggle('collapsed', saved === 'true');
       } else {
-        const defaultCollapsed = window.innerWidth <= 960;
-        sidebar.classList.toggle('collapsed', defaultCollapsed);
+        sidebar.classList.toggle('collapsed', window.innerWidth <= 960);
       }
       if (backdrop) {
         backdrop.classList.remove('active');
@@ -326,35 +390,167 @@
           elTop.innerHTML = `🎲 ${escapeHTML(campAtiva.nome)}`;
         }
       } else {
-        if (elSidebar) elSidebar.innerHTML = `<a href="index.html" class="camp-tag" style="text-decoration:none; border-color: var(--danger); color: var(--danger);">⚠️ Selecionar Campanha</a>`;
+        if (elSidebar) elSidebar.innerHTML = `<span class="camp-tag" style="border-color: var(--danger); color: var(--danger);">⚠️ Nenhuma Campanha</span>`;
         if (elTop) {
           elTop.style.display = 'inline-flex';
           elTop.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-          elTop.innerHTML = `<a href="index.html" style="color: var(--danger); text-decoration: none;">⚠️ Nenhuma Campanha Ativa</a>`;
+          elTop.innerHTML = `<span style="color: var(--danger);">⚠️ Nenhuma Campanha Ativa</span>`;
         }
       }
     }
 
-    function migrarJogadoresAntigos() {
-      if (!campAtiva) return;
-      const fichas = JSON.parse(localStorage.getItem(`openrpg_fichas${campKey}`) || '[]');
-      const velhos = JSON.parse(localStorage.getItem(`openrpg_jogadores${campKey}`) || '[]');
-      if (fichas.length === 0 && velhos.length > 0) {
-        const novos = velhos.map((j, idx) => ({
-          id: Date.now() + idx,
-          jogador: j.nome,
-          personagem: j.classe && j.classe !== 'Aventureiro' ? `${j.nome} (${j.classe})` : j.nome,
-          vida: j.vida || 0,
-          dados: {}
-        }));
-        localStorage.setItem(`openrpg_fichas${campKey}`, JSON.stringify(novos));
+    // Gerenciamento de Campanhas
+    function carregarCampanhas() {
+      campanhas = JSON.parse(localStorage.getItem('openrpg_campanhas') || '[]');
+      campAtiva = JSON.parse(localStorage.getItem('openrpg_campanha_ativa') || 'null');
+      if (!campAtiva && campanhas.length > 0) {
+        campAtiva = campanhas[0];
+        localStorage.setItem('openrpg_campanha_ativa', JSON.stringify(campAtiva));
       }
     }
 
-    // Players Management (Sem HP na criação - apenas Jogador e Personagem)
+    function salvarEstadoCampanhas() {
+      localStorage.setItem('openrpg_campanhas', JSON.stringify(campanhas));
+      localStorage.setItem('openrpg_campanha_ativa', JSON.stringify(campAtiva));
+    }
+
+    function abrirFormularioCriar() {
+      editandoCampId = null;
+      document.getElementById('form-camp-title').innerText = '✨ Criar Nova Campanha';
+      document.getElementById('form-camp-desc').innerText = 'Preencha os dados abaixo para iniciar uma nova campanha.';
+      document.getElementById('btn-salvar-camp').innerText = '+ Salvar e Ativar';
+      document.getElementById('camp-nome').value = '';
+      document.getElementById('camp-cenario').value = '';
+      document.getElementById('camp-desc').value = '';
+      document.getElementById('create-campaign-panel').style.display = 'block';
+      document.getElementById('camp-nome').focus();
+    }
+
+    function editarCampanhaAtiva() {
+      if (!campAtiva) return;
+      editandoCampId = campAtiva.id;
+      document.getElementById('form-camp-title').innerText = '✏️ Editar Campanha';
+      document.getElementById('form-camp-desc').innerText = 'Modifique os detalhes da campanha ativa.';
+      document.getElementById('btn-salvar-camp').innerText = 'Salvar Alterações';
+      document.getElementById('camp-nome').value = campAtiva.nome;
+      document.getElementById('camp-cenario').value = campAtiva.cenario;
+      document.getElementById('camp-desc').value = campAtiva.desc || '';
+      document.getElementById('create-campaign-panel').style.display = 'block';
+      document.getElementById('camp-nome').focus();
+    }
+
+    function fecharFormulario() {
+      editandoCampId = null;
+      document.getElementById('create-campaign-panel').style.display = 'none';
+    }
+
+    function salvarCampanha() {
+      const nome = document.getElementById('camp-nome').value.trim();
+      const cenario = document.getElementById('camp-cenario').value.trim() || 'Geral';
+      const desc = document.getElementById('camp-desc').value.trim();
+
+      if (!nome) {
+        mostrarToast('Por favor, informe o nome da campanha.', 'aviso');
+        return;
+      }
+
+      if (editandoCampId) {
+        const idx = campanhas.findIndex(c => c.id === editandoCampId);
+        if (idx !== -1) {
+          campanhas[idx].nome = nome;
+          campanhas[idx].cenario = cenario;
+          campanhas[idx].desc = desc;
+          campAtiva = campanhas[idx];
+        }
+      } else {
+        const nova = { id: Date.now(), nome, cenario, desc };
+        campanhas.push(nova);
+        campAtiva = nova;
+      }
+
+      salvarEstadoCampanhas();
+      fecharFormulario();
+      renderTudo();
+      mostrarToast(`Campanha "${nome}" salva com sucesso!`, 'sucesso');
+    }
+
+    function selecionarCampanha(id) {
+      const camp = campanhas.find(c => c.id === id);
+      if (camp) {
+        campAtiva = camp;
+        salvarEstadoCampanhas();
+        renderTudo();
+        mostrarToast(`Campanha "${camp.nome}" ativada!`);
+      }
+    }
+
+    function excluirCampanha(idParaExcluir) {
+      const targetId = idParaExcluir || (campAtiva ? campAtiva.id : null);
+      if (!targetId) return;
+
+      const campAlvo = campanhas.find(c => c.id === targetId);
+      const nomeCamp = campAlvo ? campAlvo.nome : 'esta campanha';
+
+      if (!confirm(`Deseja realmente excluir a campanha "${nomeCamp}" e todos os seus dados?`)) return;
+
+      localStorage.removeItem(`openrpg_personagens_${targetId}`);
+      localStorage.removeItem(`openrpg_fichas_${targetId}`);
+      localStorage.removeItem(`openrpg_parametros_${targetId}`);
+      localStorage.removeItem(`openrpg_gm_notes_${targetId}`);
+      localStorage.removeItem(`openrpg_combat_sim_${targetId}`);
+
+      campanhas = campanhas.filter(c => c.id !== targetId);
+      if (campAtiva && campAtiva.id === targetId) {
+        campAtiva = campanhas.length > 0 ? campanhas[0] : null;
+      }
+      salvarEstadoCampanhas();
+      renderTudo();
+      mostrarToast(`Campanha "${nomeCamp}" excluída.`, 'aviso');
+    }
+
+    function renderCampanhas() {
+      carregarCampanhaSidebar();
+      const boxAtiva = document.getElementById('box-campanha-ativa');
+      const listPanel = document.getElementById('campaigns-list-panel');
+      const listEl = document.getElementById('saved-campaigns-list');
+
+      if (campAtiva) {
+        boxAtiva.style.display = 'flex';
+        document.getElementById('display-camp-nome').innerText = campAtiva.nome;
+        document.getElementById('display-camp-cenario').innerText = `Cenário: ${campAtiva.cenario}`;
+        document.getElementById('display-camp-desc').innerText = campAtiva.desc || '';
+      } else {
+        boxAtiva.style.display = 'none';
+      }
+
+      if (campanhas.length === 0) {
+        listPanel.style.display = 'none';
+        abrirFormularioCriar();
+      } else {
+        listPanel.style.display = 'block';
+        listEl.innerHTML = campanhas.map(c => {
+          const isAtiva = campAtiva && campAtiva.id === c.id;
+          return `
+            <div class="player-item" style="${isAtiva ? 'border-color: var(--accent); background: rgba(59, 130, 246, 0.08);' : ''}">
+              <div class="player-info">
+                <strong>${escapeHTML(c.nome)} ${isAtiva ? '<span style="color: var(--accent); font-size: 12px; margin-left: 6px;">(Ativa)</span>' : ''}</strong>
+                <span>${escapeHTML(c.cenario)}${c.desc ? ' • ' + escapeHTML(c.desc) : ''}</span>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                ${isAtiva ? '' : `<button class="btn-copy" onclick="selecionarCampanha(${c.id})">Selecionar</button>`}
+                <button class="btn-secondary" onclick="exportarCampanhaPorId(${c.id})" title="Exportar esta campanha em JSON" style="padding: 4px 8px; font-size: 12px;">📥 JSON</button>
+                <button class="btn-danger" onclick="excluirCampanha(${c.id})" title="Excluir campanha">✕</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // Players Management
     function adicionarJogador() {
       if (!campAtiva) {
-        alert('Selecione ou crie uma campanha no Início antes de cadastrar jogadores.');
+        mostrarToast('Crie ou ative uma campanha antes de cadastrar jogadores.', 'aviso');
         return;
       }
 
@@ -365,15 +561,16 @@
       const personagem = inputPersonagem.value.trim();
 
       if (!jogador) {
-        alert('Por favor, informe o nome do jogador.');
+        mostrarToast('Por favor, informe o nome do jogador.', 'aviso');
         return;
       }
 
-      const parametros = JSON.parse(localStorage.getItem(`openrpg_parametros${campKey}`) || '[]');
+      const k = getCampKey();
+      const parametros = JSON.parse(localStorage.getItem(`openrpg_parametros${k}`) || '[]');
       const dadosIniciais = {};
       parametros.forEach(p => { dadosIniciais[p.id] = ''; });
 
-      const fichas = JSON.parse(localStorage.getItem(`openrpg_fichas${campKey}`) || '[]');
+      const fichas = JSON.parse(localStorage.getItem(`openrpg_fichas${k}`) || '[]');
       fichas.push({
         id: Date.now(),
         jogador,
@@ -385,19 +582,22 @@
         dados: dadosIniciais
       });
 
-      localStorage.setItem(`openrpg_fichas${campKey}`, JSON.stringify(fichas));
+      localStorage.setItem(`openrpg_fichas${k}`, JSON.stringify(fichas));
 
       inputJogador.value = '';
       inputPersonagem.value = '';
       renderJogadores();
+      mostrarToast(`Jogador "${jogador}" cadastrado na campanha!`, 'sucesso');
     }
 
     function removerJogador(id) {
       if (!confirm('Deseja realmente remover este jogador e sua ficha da campanha?')) return;
-      let fichas = JSON.parse(localStorage.getItem(`openrpg_fichas${campKey}`) || '[]');
+      const k = getCampKey();
+      let fichas = JSON.parse(localStorage.getItem(`openrpg_fichas${k}`) || '[]');
       fichas = fichas.filter(f => f.id !== id);
-      localStorage.setItem(`openrpg_fichas${campKey}`, JSON.stringify(fichas));
+      localStorage.setItem(`openrpg_fichas${k}`, JSON.stringify(fichas));
       renderJogadores();
+      mostrarToast('Jogador removido.');
     }
 
     function renderJogadores() {
@@ -405,16 +605,17 @@
       if (!campAtiva) {
         listaEl.innerHTML = `
           <div style="font-size: 13px; color: var(--danger); padding: 12px 0;">
-            ⚠️ Nenhuma campanha ativa selecionada. <a href="index.html" style="color: var(--accent);">Selecione ou crie uma campanha no Início</a>.
+            ⚠️ Nenhuma campanha ativa selecionada. Crie ou selecione uma campanha acima.
           </div>
         `;
         return;
       }
 
-      const fichas = JSON.parse(localStorage.getItem(`openrpg_fichas${campKey}`) || '[]');
+      const k = getCampKey();
+      const fichas = JSON.parse(localStorage.getItem(`openrpg_fichas${k}`) || '[]');
 
       if (fichas.length === 0) {
-        listaEl.innerHTML = '<div class="empty-message">Nenhum jogador cadastrado nesta campanha ainda.</div>';
+        listaEl.innerHTML = '<div class="empty-message">Nenhum jogador cadastrado nesta campanha ainda. Preencha os campos acima para adicionar.</div>';
         return;
       }
 
@@ -435,16 +636,47 @@
       }).join('');
     }
 
-    // Notes & Dice
-    function salvarNotas(texto) {
-      localStorage.setItem(`openrpg_gm_notes${campKey}`, texto);
+    // GM Session Notes
+    function carregarNotas() {
+      const el = document.getElementById('gm-notes');
+      if (!campAtiva) {
+        el.value = '';
+        el.placeholder = 'Selecione ou crie uma campanha acima para habilitar o bloco de notas.';
+        el.disabled = true;
+        return;
+      }
+      el.disabled = false;
+      el.placeholder = 'Escreva segredos da campanha, ganchos de trama, NPCs importantes, planos para a sessão...';
+      const k = getCampKey();
+      const notas = localStorage.getItem(`openrpg_gm_notes${k}`) || '';
+      el.value = notas;
     }
 
+    function salvarNotas(texto) {
+      if (!campAtiva) return;
+      const k = getCampKey();
+      localStorage.setItem(`openrpg_gm_notes${k}`, texto);
+    }
+
+    // Rolador Rápido de Dados
     function rolarDado(faces) {
       const resultado = Math.floor(Math.random() * faces) + 1;
-      const el = document.getElementById('dice-result');
-      el.innerText = `🎲 d${faces} ➔ ${resultado}`;
-      if (typeof tocarSomDado === 'function') tocarSomDado(resultado);
+      const display = document.getElementById('dice-result');
+      if (display) {
+        display.innerHTML = `Resultado do <strong>d${faces}</strong>: <span style="font-size: 20px; color: var(--accent); font-weight: 700;">${resultado}</span>`;
+      }
+      if (typeof tocarSomDado === 'function') {
+        tocarSomDado(resultado);
+      }
+      if (typeof mostrarToast === 'function') {
+        mostrarToast(`d${faces}: resultado ${resultado}`);
+      }
+    }
+
+    function renderTudo() {
+      renderCampanhas();
+      renderJogadores();
+      carregarNotas();
     }
 
     // Configurações Modal
@@ -466,19 +698,11 @@
       if (e.key === 'Escape') fecharConfiguracoes();
     });
 
-    document.addEventListener('DOMContentLoaded', aplicarEstadoSidebar);
-
-    // Init
-    window.onload = function() {
+    document.addEventListener('DOMContentLoaded', () => {
       aplicarEstadoSidebar();
-      carregarCampanhaSidebar();
-      migrarJogadoresAntigos();
-      const notasSalvas = localStorage.getItem(`openrpg_gm_notes${campKey}`);
-      if (notasSalvas) {
-        document.getElementById('gm-notes').value = notasSalvas;
-      }
-      renderJogadores();
-    };
+      carregarCampanhas();
+      renderTudo();
+    });
   </script>
 </body>
 </html>

@@ -404,6 +404,16 @@ button:hover {
     background: var(--success-hover);
 }
 
+.btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #2563eb;
+}
+.btn-primary:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
 .btn-copy {
     background: var(--info);
     color: #fff;
@@ -1434,4 +1444,181 @@ body.reduce-motion *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+}
+/* Custom Toast Pop-up */
+.openrpg-toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+.openrpg-toast {
+    background: #151b28;
+    color: #f1f5f9;
+    border: 1px solid #3b82f6;
+    border-left: 4px solid #3b82f6;
+    padding: 12px 18px;
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    font-size: 13.5px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity .25s ease, transform .25s ease;
+    pointer-events: auto;
+    max-width: 380px;
+}
+.openrpg-toast.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.openrpg-toast.sucesso {
+    border-left-color: #10b981;
+}
+.openrpg-toast.sucesso .toast-icon {
+    color: #10b981;
+    font-weight: 700;
+}
+.openrpg-toast.erro {
+    border-left-color: #ef4444;
+}
+.openrpg-toast.erro .toast-icon {
+    color: #ef4444;
+}
+.openrpg-toast.aviso {
+    border-left-color: #eab308;
+}
+.openrpg-toast.aviso .toast-icon {
+    color: #eab308;
+}
+
+/* Sidebar toggle menu visibility - esconde o botão Menu quando sidebar aberta */
+.sidebar:not(.collapsed) ~ .main-content .btn-sidebar-toggle,
+.sidebar:not(.collapsed) ~ main .btn-sidebar-toggle {
+    display: none !important;
+}
+
+/* Vitrine Showcase & Role Entry */
+.role-entry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+    margin: 20px 0 28px;
+}
+.role-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.role-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.role-card-gm { border-top: 3px solid var(--rpg-gold); }
+.role-card-gm:hover { border-color: var(--rpg-gold); }
+.role-card-player { border-top: 3px solid var(--accent); }
+.role-card-player:hover { border-color: var(--accent); }
+.role-card-header { display: flex; align-items: center; gap: 12px; }
+.role-card-icon { font-size: 30px; line-height: 1; }
+.role-card-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+.role-card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.45; }
+.role-card-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-subtle);
+}
+.role-card-btn {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    box-sizing: border-box;
+}
+.vitrine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+.vitrine-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.vitrine-item-title { font-size: 13.5px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+.vitrine-item-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+.role-card-btn-gm {
+    background: var(--rpg-gold);
+    color: #0d1117;
+    border: 1px solid var(--rpg-gold);
+}
+.role-card-btn-gm:hover {
+    background: #eab308;
+    border-color: #eab308;
+    color: #0d1117;
+}
+
+.role-card-btn-player {
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #2563eb;
+}
+.role-card-btn-player:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    color: #ffffff;
+}
+
+.standalone-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-app);
+}
+.standalone-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-sidebar);
+}
+.standalone-content {
+    flex: 1;
+    padding: 24px 20px 48px;
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
 }

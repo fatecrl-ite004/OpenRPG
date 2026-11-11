@@ -3,140 +3,131 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenRPG - Início</title>
+  <title>OpenRPG - Sua Mesa Ágil de RPG</title>
   <link rel="stylesheet" href="style.css">
   <script src="settings.js" defer></script>
 </head>
 <body>
-  <div class="app-container">
+  <div class="standalone-container">
     
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar">
-      <div class="brand">
-        <button class="btn-toggle-sidebar" onclick="toggleSidebar()" title="Recolher menu lateral">◀</button>
-        <img src="img/icon.webp" alt="OpenRPG" class="brand-icon">
-        <h1>OpenRPG</h1>
-        <div id="sidebar-campanha" class="sidebar-campaign-info"></div>
+    <!-- Top Vitrine Header -->
+    <header class="standalone-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="img/icon.webp" alt="OpenRPG" style="width: 34px; height: 34px; object-fit: contain;">
+        <span style="font-size: 18px; font-weight: 700; color: var(--text-main); letter-spacing: 0.5px;">OpenRPG</span>
       </div>
-      <nav class="nav-menu">
-        <a id="btn-tab-home" class="nav-btn active" href="index.html">
-          🏠 Início
-        </a>
-        <a id="btn-tab-sessao" class="nav-btn" href="combate.html">
-          ⚔️ Simulação de Combate
-        </a>
-        <a id="btn-tab-mestre" class="nav-btn" href="mestre.html">
-          👑 Painel do Mestre
-        </a>
-        <a id="btn-tab-fichas" class="nav-btn" href="fichas.html">
-          📄 Fichas de Personagem
-        </a>
-      </nav>
-    </aside>
-    <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+      <div>
+        <button class="btn-settings" onclick="abrirConfiguracoes()" title="Configurações e Acessibilidade">
+          ⚙️ <span class="btn-settings-text">Configurações</span>
+        </button>
+      </div>
+    </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
+    <!-- Main Vitrine Content -->
+    <main class="standalone-content">
       
-      <!-- Top Bar -->
-      <header class="top-nav-bar">
-        <div class="top-nav-left">
-          <button class="btn-sidebar-toggle" onclick="toggleSidebar()" title="Abrir ou fechar menu lateral">
-            ☰ Menu
-          </button>
-          <div class="top-page-badge">
-            🏠 Início & Campanhas
-          </div>
-        </div>
-        <div class="top-nav-right">
-          <div id="top-camp-indicator" class="top-camp-pill" style="display: none;"></div>
-          <button class="btn-settings" onclick="abrirConfiguracoes()" title="Configurações do sistema">
-            ⚙️ <span class="btn-settings-text">Configurações</span>
-          </button>
-        </div>
-      </header>
-
       <!-- Hero Section -->
       <section class="home-hero">
         <img src="img/icon.webp" alt="OpenRPG" class="home-logo">
         <h1>OpenRPG</h1>
         <p class="home-description">
-          Sua plataforma ágil para mestrar e jogar RPG de mesa. Organize campanhas, consulte fichas personalizadas, simule combates táticos e concentre-se na narrativa da sua mesa.
+          A plataforma ágil, moderna e sem burocracia para mestres e jogadores de RPG de mesa.
+          Organize campanhas, gerencie fichas, controle iniciativa e simule combates táticos em tempo real.
         </p>
       </section>
 
-      <!-- Campaign Management Area -->
-      <section class="section-container" style="max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+      <!-- Primary Entry Choices: Mestre vs Jogador -->
+      <div class="role-entry-grid">
         
-        <!-- Input invisível compartilhado para importação de JSON de campanha -->
-        <input type="file" id="import-campanha-input" accept=".json" style="display: none;" onchange="importarBackupCampanha(event)">
-
-        <!-- Active Campaign Card -->
-        <div id="active-campaign-panel" class="panel" style="display: none; margin-bottom: 0;">
-          <div class="panel-title">🎲 Campanha Ativa</div>
-          <div class="campaign-active-box">
-            <div>
-              <h3 id="display-camp-nome" style="font-size: 18px; margin-bottom: 4px; color: var(--text-main);"></h3>
-              <p id="display-camp-cenario" style="color: var(--accent); font-size: 13px; font-weight: 600;"></p>
-              <p id="display-camp-desc" style="color: var(--text-muted); font-size: 13px; margin-top: 6px;"></p>
-            </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-              <button onclick="editarCampanhaAtiva()" class="btn-copy">✏️ Editar Campanha</button>
-              <button onclick="exportarBackupCampanha()" class="btn-secondary" title="Exportar dados da campanha ativa em formato JSON">📥 Exportar (Campanha Atual)</button>
-              <button onclick="document.getElementById('import-campanha-input').click()" class="btn-secondary" title="Importar arquivo JSON de backup de campanha">📤 Importar</button>
-            </div>
-          </div>
-
-          <!-- Quick Navigation Actions -->
-          <div class="action-card-grid">
-            <a href="combate.html" class="action-card">
-              <h3>⚔️ Simulação de Combate</h3>
-              <p>Simule e teste encontros da sessão com controle ágil de iniciativa, HP, dor e munição.</p>
-            </a>
-            <a href="mestre.html" class="action-card">
-              <h3>👑 Painel do Mestre</h3>
-              <p>Cadastre os jogadores da mesa, use o rolador de dados poliédricos e faça anotações rápidas.</p>
-            </a>
-            <a href="fichas.html" class="action-card">
-              <h3>📄 Fichas de Personagem</h3>
-              <p>Defina parâmetros customizados e preencha os atributos vitais e vida dos personagens.</p>
-            </a>
-          </div>
-        </div>
-
-        <!-- List of All Created Campaigns -->
-        <div id="campaigns-list-panel" class="panel" style="margin-bottom: 0;">
-          <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-            <span>📚 Suas Campanhas</span>
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-              <button onclick="document.getElementById('import-campanha-input').click()" class="btn-secondary" style="padding: 6px 12px; font-size: 13px;" title="Importar backup de campanha via arquivo JSON">
-                📤 Importar Campanha
-              </button>
-              <button onclick="abrirFormularioCriar()" class="btn-success" style="padding: 6px 14px; font-size: 13px;">+ Nova Campanha</button>
-            </div>
-          </div>
-          <div id="saved-campaigns-list" class="player-list"></div>
-        </div>
-
-        <!-- Create/Edit Campaign Form -->
-        <div id="create-campaign-panel" class="panel" style="display: none; margin-bottom: 0;">
-          <div id="form-camp-title" class="panel-title">✨ Criar Nova Campanha</div>
-          <p id="form-camp-desc" class="panel-subtitle">
-            Preencha os dados abaixo para iniciar uma nova campanha e isolar suas fichas, simulações e notas.
-          </p>
+        <!-- Card Mestre -->
+        <div class="role-card role-card-gm">
           <div style="display: flex; flex-direction: column; gap: 12px;">
-            <input id="camp-nome" placeholder="Nome da Campanha (ex: As Minas de Phandelver)">
-            <input id="camp-cenario" placeholder="Cenário / Ambientação (ex: Fantasia Medieval, Cyberpunk, Terror)">
-            <textarea id="camp-desc" placeholder="Descrição ou premissa da história (opcional)" style="height: 80px; resize: vertical;"></textarea>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-              <button id="btn-salvar-camp" onclick="salvarCampanha()" class="btn-success">+ Salvar e Ativar</button>
-              <button onclick="document.getElementById('import-campanha-input').click()" type="button" class="btn-secondary" title="Importar campanha salva em arquivo JSON">📤 Importar Backup (JSON)</button>
-              <button onclick="fecharFormulario()" class="btn-secondary">Cancelar</button>
+            <div class="role-card-header">
+              <span class="role-card-icon">👑</span>
+              <div>
+                <div class="role-card-title">Área do Mestre</div>
+                <span class="role-card-badge" style="background: rgba(234, 179, 8, 0.15); color: var(--rpg-gold); border: 1px solid rgba(234, 179, 8, 0.3);">
+                  Painel, Campanhas & Combate
+                </span>
+              </div>
+            </div>
+            <p class="role-card-desc">
+              Crie e organize suas campanhas, cadastre personagens dos jogadores, defina parâmetros globais, mantenha anotações secretas e simule combates épicos.
+            </p>
+            <ul class="role-card-features">
+              <li>✨ Criação e alternância de múltiplas campanhas</li>
+              <li>✨ Fichas integradas e parâmetros customizados</li>
+              <li>✨ Simulação tática de iniciativa, vida e rodadas</li>
+              <li>✨ Anotações secretas do Mestre e rolador geral</li>
+            </ul>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <a href="mestre.html" class="role-card-btn role-card-btn-gm">
+              👑 Entrar como Mestre
+            </a>
+            <div style="display: flex; gap: 6px; justify-content: center; font-size: 11.5px; color: var(--text-muted);">
+              <span>Campanhas • Fichas • Combate Tático</span>
             </div>
           </div>
         </div>
 
-      </section>
+        <!-- Card Jogador -->
+        <div class="role-card role-card-player">
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="role-card-header">
+              <span class="role-card-icon">🗡️</span>
+              <div>
+                <div class="role-card-title">Área do Jogador</div>
+                <span class="role-card-badge" style="background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3);">
+                  Ficha Individual & Dados
+                </span>
+              </div>
+            </div>
+            <p class="role-card-desc">
+              Ambiente dedicado para o jogador: importe sua ficha (.json), edite atributos, vida (HP), defesa, iniciativa e mochila, com salvamento local instantâneo e exportação direta.
+            </p>
+            <ul class="role-card-features">
+              <li>✨ Importação e exportação de ficha (.json) individual</li>
+              <li>✨ Controle de Vida Máxima (HP), Atual, Defesa e Iniciativa</li>
+              <li>✨ Mochila e inventário completos com edição rápida</li>
+              <li>✨ Rolador de dados embutido com feedback sonoro</li>
+            </ul>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <a href="jogador.html" class="role-card-btn role-card-btn-player">
+              🗡️ Entrar como Jogador
+            </a>
+            <div style="display: flex; gap: 6px; justify-content: center; font-size: 11.5px; color: var(--text-muted);">
+              <span>Ficha salva no seu navegador • 100% Offline</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Vitrine Features -->
+      <div class="panel">
+        <div class="panel-title">✨ Por que usar o OpenRPG?</div>
+        <p class="panel-subtitle">Ferramentas essenciais projetadas para agilizar a mesa e eliminar o atrito de regras e papéis.</p>
+        <div class="vitrine-grid">
+          <div class="vitrine-item">
+            <div class="vitrine-item-title">⚔️ Combate Tático</div>
+            <div class="vitrine-item-desc">Rastreie iniciativa, PVs, condições e rodadas com cálculo de dano e cura rápidos em um painel unificado.</div>
+          </div>
+          <div class="vitrine-item">
+            <div class="vitrine-item-title">📜 Fichas Universais</div>
+            <div class="vitrine-item-desc">Compatível com D&D, Tormenta20, Ordem Paranormal, Pathfinder, OSR e qualquer sistema com parâmetros customizados.</div>
+          </div>
+          <div class="vitrine-item">
+            <div class="vitrine-item-title">🔒 Offline & Privado</div>
+            <div class="vitrine-item-desc">Seus dados ficam 100% no seu navegador com importação e exportação segura em arquivos JSON.</div>
+          </div>
+          <div class="vitrine-item">
+            <div class="vitrine-item-title">⚡ Ágil & Direto</div>
+            <div class="vitrine-item-desc">Sem login, sem cadastro obrigatório e sem telas pesadas. Abra no navegador e comece a jogar.</div>
+          </div>
+        </div>
+      </div>
 
     </main>
   </div>
@@ -249,38 +240,6 @@
           </div>
         </div>
 
-        <!-- Opção 3: Exportar JSON -->
-        <div class="settings-section">
-          <div class="settings-section-head">
-            <span class="settings-section-title">💾 Backup da Campanha</span>
-            <span class="settings-badge" style="background: var(--accent-subtle); color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">Ativo</span>
-          </div>
-          <p class="settings-desc">Exportação e importação de dados da campanha para portabilidade e segurança.</p>
-          <div class="export-box">
-            <div>
-              <strong style="font-size: 13px; color: var(--text-main);">Exportar JSON Geral da Campanha Ativa</strong>
-              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
-                Gera um arquivo compacto com fichas, anotações e parâmetros salvos.
-              </div>
-            </div>
-            <button class="btn-secondary" onclick="exportarBackupCampanha()" title="Baixar backup da campanha ativa">
-              📥 Baixar JSON
-            </button>
-          </div>
-          <div class="export-box" style="margin-top: 8px;">
-            <div>
-              <strong style="font-size: 13px; color: var(--text-main);">Importar JSON de Campanha</strong>
-              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
-                Restaura fichas, anotações e parâmetros a partir de um arquivo JSON.
-              </div>
-            </div>
-            <button class="btn-secondary" onclick="document.getElementById('backup-file-input').click()" title="Importar arquivo JSON de backup">
-              📤 Importar JSON
-            </button>
-            <input type="file" id="backup-file-input" accept=".json" style="display: none;" onchange="importarBackupCampanha(event)">
-          </div>
-        </div>
-
       </div>
       <div class="modal-footer">
         <button class="btn-secondary" onclick="fecharConfiguracoes()">Fechar</button>
@@ -289,229 +248,15 @@
   </div>
 
   <script>
-    // State
-    let campanhas = JSON.parse(localStorage.getItem('openrpg_campanhas') || '[]');
-    let campanhaAtiva = JSON.parse(localStorage.getItem('openrpg_campanha_ativa') || 'null');
-    let editandoId = null;
-
-    function escapeHTML(texto) {
-      const div = document.createElement('div');
-      div.textContent = texto == null ? '' : String(texto);
-      return div.innerHTML;
-    }
-
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const backdrop = document.getElementById('sidebar-backdrop');
-      if (!sidebar) return;
-
-      const isCollapsed = sidebar.classList.toggle('collapsed');
-      if (backdrop) {
-        if (!isCollapsed && window.innerWidth <= 960) {
-          backdrop.classList.add('active');
-        } else {
-          backdrop.classList.remove('active');
-        }
-      }
-      localStorage.setItem('openrpg_sidebar_collapsed', isCollapsed ? 'true' : 'false');
-    }
-
-    function aplicarEstadoSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const backdrop = document.getElementById('sidebar-backdrop');
-      if (!sidebar) return;
-
-      const saved = localStorage.getItem('openrpg_sidebar_collapsed');
-      if (saved !== null) {
-        sidebar.classList.toggle('collapsed', saved === 'true');
-      } else {
-        const defaultCollapsed = window.innerWidth <= 960;
-        sidebar.classList.toggle('collapsed', defaultCollapsed);
-      }
-      if (backdrop) {
-        backdrop.classList.remove('active');
-      }
-    }
-
-    function abrirFormularioCriar() {
-      editandoId = null;
-      document.getElementById('form-camp-title').innerText = '✨ Criar Nova Campanha';
-      document.getElementById('form-camp-desc').innerText = 'Preencha os dados abaixo para iniciar uma nova campanha.';
-      document.getElementById('btn-salvar-camp').innerText = '+ Salvar e Ativar';
-      document.getElementById('camp-nome').value = '';
-      document.getElementById('camp-cenario').value = '';
-      document.getElementById('camp-desc').value = '';
-      document.getElementById('create-campaign-panel').style.display = 'block';
-      document.getElementById('camp-nome').focus();
-    }
-
-    function editarCampanhaAtiva() {
-      if (!campanhaAtiva) return;
-      editandoId = campanhaAtiva.id;
-      document.getElementById('form-camp-title').innerText = '✏️ Editar Campanha';
-      document.getElementById('form-camp-desc').innerText = 'Modifique os detalhes da campanha ativa.';
-      document.getElementById('btn-salvar-camp').innerText = 'Salvar Alterações';
-      document.getElementById('camp-nome').value = campanhaAtiva.nome;
-      document.getElementById('camp-cenario').value = campanhaAtiva.cenario;
-      document.getElementById('camp-desc').value = campanhaAtiva.desc || '';
-      document.getElementById('create-campaign-panel').style.display = 'block';
-      document.getElementById('camp-nome').focus();
-    }
-
-    function fecharFormulario() {
-      editandoId = null;
-      document.getElementById('create-campaign-panel').style.display = 'none';
-    }
-
-    function salvarDados() {
-      localStorage.setItem('openrpg_campanhas', JSON.stringify(campanhas));
-      localStorage.setItem('openrpg_campanha_ativa', JSON.stringify(campanhaAtiva));
-    }
-
-    function carregarCampanhaSidebar() {
-      const elSidebar = document.getElementById('sidebar-campanha');
-      const elTop = document.getElementById('top-camp-indicator');
-
-      if (campanhaAtiva && campanhaAtiva.nome) {
-        if (elSidebar) elSidebar.innerHTML = `<span class="camp-tag">🎲 ${escapeHTML(campanhaAtiva.nome)}</span>`;
-        if (elTop) {
-          elTop.style.display = 'inline-flex';
-          elTop.style.borderColor = 'var(--border-color)';
-          elTop.innerHTML = `🎲 ${escapeHTML(campanhaAtiva.nome)}`;
-        }
-      } else {
-        if (elSidebar) elSidebar.innerHTML = `<span class="camp-tag" style="border-color: var(--danger); color: var(--danger);">⚠️ Nenhuma Campanha</span>`;
-        if (elTop) {
-          elTop.style.display = 'inline-flex';
-          elTop.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-          elTop.innerHTML = `<span style="color: var(--danger);">⚠️ Nenhuma Campanha Ativa</span>`;
-        }
-      }
-    }
-
-    function salvarCampanha() {
-      const nome = document.getElementById('camp-nome').value.trim();
-      const cenario = document.getElementById('camp-cenario').value.trim() || 'Geral';
-      const desc = document.getElementById('camp-desc').value.trim();
-
-      if (!nome) {
-        alert('Por favor, informe o nome da campanha.');
-        return;
-      }
-
-      if (editandoId) {
-        const index = campanhas.findIndex(c => c.id === editandoId);
-        if (index !== -1) {
-          campanhas[index].nome = nome;
-          campanhas[index].cenario = cenario;
-          campanhas[index].desc = desc;
-          campanhaAtiva = campanhas[index];
-        }
-      } else {
-        const novaCampanha = { id: Date.now(), nome, cenario, desc };
-        campanhas.push(novaCampanha);
-        campanhaAtiva = novaCampanha;
-      }
-
-      salvarDados();
-      fecharFormulario();
-      render();
-    }
-
-    function selecionarCampanha(id) {
-      const camp = campanhas.find(c => c.id === id);
-      if (camp) {
-        campanhaAtiva = camp;
-        salvarDados();
-        render();
-      }
-    }
-
-    function excluirCampanha(idParaExcluir) {
-      const targetId = idParaExcluir || (campanhaAtiva ? campanhaAtiva.id : null);
-      if (!targetId) return;
-
-      if (!confirm('Deseja realmente excluir esta campanha e todos os seus dados?')) return;
-
-      localStorage.removeItem(`openrpg_personagens_${targetId}`);
-      localStorage.removeItem(`openrpg_fichas_${targetId}`);
-      localStorage.removeItem(`openrpg_parametros_${targetId}`);
-      localStorage.removeItem(`openrpg_gm_notes_${targetId}`);
-
-      campanhas = campanhas.filter(c => c.id !== targetId);
-      if (campanhaAtiva && campanhaAtiva.id === targetId) {
-        campanhaAtiva = campanhas.length > 0 ? campanhas[0] : null;
-      }
-      salvarDados();
-      render();
-    }
-
-    function render() {
-      carregarCampanhaSidebar();
-      const activePanel = document.getElementById('active-campaign-panel');
-      const listPanel = document.getElementById('campaigns-list-panel');
-      const listEl = document.getElementById('saved-campaigns-list');
-
-      if (campanhaAtiva) {
-        activePanel.style.display = 'block';
-        document.getElementById('display-camp-nome').innerText = campanhaAtiva.nome;
-        document.getElementById('display-camp-cenario').innerText = `Cenário: ${campanhaAtiva.cenario}`;
-        document.getElementById('display-camp-desc').innerText = campanhaAtiva.desc || '';
-      } else {
-        activePanel.style.display = 'none';
-        if (campanhas.length === 0) {
-          abrirFormularioCriar();
-        }
-      }
-
-      if (campanhas.length === 0) {
-        listPanel.style.display = 'none';
-      } else {
-        listPanel.style.display = 'block';
-        listEl.innerHTML = campanhas.map(c => {
-          const isAtiva = campanhaAtiva && campanhaAtiva.id === c.id;
-          return `
-            <div class="player-item" style="${isAtiva ? 'border-color: var(--accent); background: rgba(59, 130, 246, 0.08);' : ''}">
-              <div class="player-info">
-                <strong>${escapeHTML(c.nome)} ${isAtiva ? '<span style="color: var(--accent); font-size: 12px; margin-left: 6px;">(Ativa)</span>' : ''}</strong>
-                <span>${escapeHTML(c.cenario)}${c.desc ? ' • ' + escapeHTML(c.desc) : ''}</span>
-              </div>
-              <div style="display:flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                ${isAtiva ? '' : `<button class="btn-copy" onclick="selecionarCampanha(${c.id})">Selecionar</button>`}
-                <button class="btn-secondary" onclick="exportarCampanhaPorId(${c.id})" title="Exportar esta campanha em JSON" style="padding: 4px 8px; font-size: 12px;">📥 JSON</button>
-                <button class="btn-danger" onclick="excluirCampanha(${c.id})" title="Excluir campanha">✕</button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-    }
-
-    // Configurações Modal
     function abrirConfiguracoes() {
       document.getElementById('settings-modal').classList.add('active');
     }
-
     function fecharConfiguracoes() {
       document.getElementById('settings-modal').classList.remove('active');
     }
-
     function fecharConfiguracoesPorFora(e) {
-      if (e.target.id === 'settings-modal') {
-        fecharConfiguracoes();
-      }
+      if (e.target.id === 'settings-modal') fecharConfiguracoes();
     }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') fecharConfiguracoes();
-    });
-
-    document.addEventListener('DOMContentLoaded', aplicarEstadoSidebar);
-
-    window.onload = function() {
-      aplicarEstadoSidebar();
-      render();
-    };
   </script>
 </body>
 </html>
