@@ -4,15 +4,19 @@ Sistema web para gerenciamento ágil de sessões de RPG de mesa (TTRPG), voltado
 
 ## Funcionalidades
 
-- **Gerenciamento de Campanhas:** Criação, edição, alternância e isolamento completo de dados entre diferentes campanhas e cenários.
-- **Painel do Mestre:** Cadastro simplificado de jogadores da mesa, rolador de dados poliédricos integrado (d4, d6, d8, d10, d12, d20, d100) e bloco de anotações de sessão com salvamento automático.
-- **Fichas Digitais Parametrizáveis:** Controle de atributos vitais obrigatórios (Vida Máxima, Iniciativa, Defesa/CA e Mochila/Inventário detalhado), além de suporte à criação dinâmica de parâmetros personalizados pelo mestre.
-- **Simulação de Combate:** Rastreador tático de iniciativa e turnos (com avanço automático de rodadas e destaque para o combatente da vez), recrutamento em um clique dos jogadores da campanha, inserção rápida de inimigos/NPCs, ajuste rápido de dano/cura (-5, -1, +1, +5) e alternância instantânea de condições de status (Caído, Atordoado, Sangrando, Envenenado, Cego, Invisível).
+- **Vitrine e Separação de Perfis:** Página inicial independente com roteamento limpo e direto entre a **Área do Mestre** e a **Área do Jogador**.
+- **Área do Jogador (Standalone):** Ambiente exclusivo e isolado para o jogador gerenciar sua própria ficha, controlar Vida Atual e Máxima (com botões de cálculo rápido), Defesa (CA), Iniciativa, atributos modulares, inventário/mochila e rolador de dados com áudio.
+- **Painel do Mestre com Campanhas Unificadas:** Criação, edição, alternância e isolamento completo de campanhas integrados no topo do painel, cadastro simplificado de jogadores da mesa, rolador de dados poliédricos (d4 a d100 com atalhos numéricos 1 a 7) e bloco de anotações de sessão com salvamento contínuo (`oninput`).
+- **Fichas Digitais Parametrizáveis:** Controle de atributos vitais (Vida Máxima, Iniciativa, Defesa/CA e Mochila/Inventário detalhado), criação dinâmica de parâmetros personalizados pelo mestre e envio em um clique (`⚔️ Ao Combate`).
+- **Portabilidade Total em JSON:** Exportação e importação de backup geral da campanha e de fichas individuais avulsas em formato `.json`.
+- **Simulação de Combate Tático:** Rastreador ágil de iniciativa e turnos (com avanço automático de rodadas e destaque do combatente ativo via atalhos de teclado), recrutamento em um clique dos jogadores, inserção rápida de inimigos/NPCs, ajuste rápido de dano/cura (-5, -1, +1, +5) e alternância instantânea de condições de status (Caído, Atordoado, Sangrando, Envenenado, Cego, Invisível).
+- **Acessibilidade Universal:** Painel de configurações com escala de texto customizável, modo de alto contraste, fonte adaptada para dislexia (*Lexend*), redução de animações e retorno sonoro/leitura por voz das rolagens de dados.
 
 ## Tecnologias utilizadas
 
 - **Linguagens:** HTML5, CSS3, JavaScript (ES6+ nativo / Vanilla JS).
-- **Armazenamento:** Web Storage API (`localStorage` para persistência local no navegador).
+- **Web APIs:** Web Storage API (`localStorage`), Web Audio API, Web Speech Synthesis API.
+- **Armazenamento:** Persistência cliente-side desacoplada e serializada em JSON no próprio navegador.
 - **Hospedagem:** GitHub Pages.
 
 ## Pré-requisitos
@@ -41,7 +45,7 @@ Por se tratar de uma aplicação construída puramente com HTML, CSS e JavaScrip
 
 ### 3. Configurar o ambiente
 
-Nenhuma configuração de variáveis de ambiente (`.env`) ou banco de dados externo é necessária. Todos os dados são armazenados localmente e de forma isolada por campanha no próprio navegador do usuário através do `localStorage`.
+Nenhuma configuração de variáveis de ambiente (`.env`) ou banco de dados externo é necessária. Todos os dados são armazenados localmente e de forma isolada por campanha e jogador no próprio navegador através do `localStorage`.
 
 ## Execução em ambiente de desenvolvimento
 
@@ -62,7 +66,7 @@ Para uma experiência idêntica à de produção:
 
 ## Build para produção
 
-Por ser uma aplicação web estática nativa, o **OpenRPG não necessita de etapas de compilação ou empacotamento** (dispensando ferramentas de build como Vite ou Webpack). Os próprios arquivos-fonte (`index.html`, `combate.html`, `mestre.html`, `fichas.html`, `style.css` e pasta `img/`) já constituem os arquivos prontos para deploy e publicação em qualquer servidor web ou CDN estática.
+Por ser uma aplicação web estática nativa, o **OpenRPG não necessita de etapas de compilação ou empacotamento** (dispensando ferramentas de build como Vite ou Webpack). Os próprios arquivos-fonte (`index.html`, `jogador.html`, `mestre.html`, `fichas.html`, `combate.html`, `settings.js`, `style.css` e pasta `img/`) já constituem os arquivos prontos para deploy e publicação em qualquer servidor web ou CDN estática.
 
 ### Testar a versão de produção localmente
 
@@ -81,10 +85,12 @@ OpenRPG/
 ├── img/
 │   └── icon.webp            # Logotipo e ícone oficial da aplicação
 ├── combate.html             # Módulo de Simulação de Combate (Iniciativa, turnos e HP tático)
-├── fichas.html              # Módulo de Fichas de Personagem (Vida, Iniciativa, Defesa e Mochila)
-├── index.html               # Página inicial e Gerenciador de Campanhas
-├── mestre.html              # Painel do Mestre (Lista de jogadores, Dados e Anotações)
-├── style.css                # Folha de estilos unificada da aplicação
+├── fichas.html              # Módulo de Fichas de Personagem (Parâmetros customizados, EXPORTAR/IMPORTAR)
+├── index.html               # Vitrine e roteamento inicial (Entrada como Mestre ou Jogador)
+├── jogador.html             # Área do Jogador Standalone (Ficha solo, HP, mochila e dados)
+├── mestre.html              # Painel do Mestre e Campanhas Unificadas (Jogadores, dados e anotações)
+├── settings.js              # Módulo compartilhado de Acessibilidade, Áudio e Toasts
+├── style.css                # Folha de estilos unificada e design system da aplicação
 ├── README-antigo.md         # Registro histórico do README inicial
 ├── README-template.md       # Modelo de estrutura fornecido
 └── README.md                # Documentação oficial do projeto
@@ -99,4 +105,4 @@ OpenRPG/
 
 ## Documentação adicional
 
-Consulte a [Wiki do projeto](https://github.com/fatecrl-ite004/OpenRPG/wiki) para obter informações complementares, como apresentação, requisitos, decisões de projeto, protótipos e outras informações relevantes.
+Consulte a [Wiki do projeto](https://github.com/fatecrl-ite004/OpenRPG/wiki) para obter informações complementares, como apresentação, requisitos, decisões de projeto, protótipos e roadmap.
