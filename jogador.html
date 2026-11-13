@@ -268,30 +268,49 @@
       </div>
       <div class="modal-body">
         
-        <!-- Opção 1: Tema -->
+        <!-- Opção 1: Tema Padrão -->
         <div class="settings-section">
           <div class="settings-section-head">
-            <span class="settings-section-title">🎨 Tema Visual</span>
-            <span class="settings-badge">Em breve</span>
+            <span class="settings-section-title">🎨 Temas Padrão</span>
+            <span class="settings-badge" style="background: var(--accent-subtle); color: var(--accent); border-color: rgba(59, 130, 246, 0.3);">Ativo</span>
           </div>
-          <p class="settings-desc">Personalização da paleta visual da interface para diferentes cenários de jogo.</p>
+          <p class="settings-desc">Escolha uma das paletas oficiais prontas para uso:</p>
           <div class="theme-preview-grid">
-            <div class="theme-card-option current">
+            <div class="theme-card-option" data-theme="dark-obsidian" onclick="selecionarTema('dark-obsidian')">
               <strong>🌑 Dark Obsidian</strong>
-              <span>Tema escuro focado em contraste e clareza (Ativo)</span>
+              <span>Tema escuro focado em contraste e clareza</span>
             </div>
-            <div class="theme-card-option">
+            <div class="theme-card-option" data-theme="pergaminho" onclick="selecionarTema('pergaminho')">
               <strong>📜 Pergaminho Fantasia</strong>
               <span>Tons terrosos e estética de tomo medieval</span>
             </div>
-            <div class="theme-card-option">
+            <div class="theme-card-option" data-theme="cyberpunk" onclick="selecionarTema('cyberpunk')">
               <strong>🌆 Cyberpunk Night</strong>
               <span>Tons de azul profundo e detalhes ciberpunk</span>
             </div>
-            <div class="theme-card-option">
+            <div class="theme-card-option" data-theme="grimdark" onclick="selecionarTema('grimdark')">
               <strong>⚔️ Grimdark Monocromo</strong>
               <span>Cinza e grafite com alto foco funcional</span>
             </div>
+          </div>
+        </div>
+
+        <!-- Opção 1.1: Tema Personalizado -->
+        <div class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-section-title">🛠️ Tema Personalizado</span>
+          </div>
+          <p class="settings-desc">Crie sua própria paleta de cores, configure imagem de fundo e compartilhe via JSON:</p>
+          <div id="theme-card-custom" class="theme-card-option" style="margin-top: 6px;" onclick="selecionarTema('custom')">
+            <strong id="theme-custom-active-name">🛠️ Tema Personalizado</strong>
+            <span>Paleta personalizada com suporte a cores e imagem de fundo</span>
+          </div>
+          <div class="theme-custom-actions">
+            <button type="button" class="btn-secondary" style="font-size: 11.5px; padding: 6px 10px;" onclick="abrirCriadorTema()">🎨 Editar Tema</button>
+            <button type="button" class="btn-secondary" style="font-size: 11.5px; padding: 6px 10px;" onclick="exportarTemaJSON()">📤 Exportar (.json)</button>
+            <button type="button" class="btn-secondary" style="font-size: 11.5px; padding: 6px 10px;" onclick="document.getElementById('theme-import-input').click()">📥 Importar (.json)</button>
+            <button type="button" class="btn-secondary" style="font-size: 11.5px; padding: 6px 10px; color: var(--danger);" onclick="deletarTemaCustomizado()">🗑️ Excluir</button>
+            <input type="file" id="theme-import-input" accept=".json" onchange="importarTemaJSON(event)" style="display: none;">
           </div>
         </div>
 

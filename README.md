@@ -8,7 +8,8 @@ Sistema web para gerenciamento ágil de sessões de RPG de mesa (TTRPG), voltado
 - **Área do Jogador (Standalone):** Ambiente exclusivo e isolado para o jogador gerenciar sua própria ficha, controlar Vida Atual e Máxima (com botões de cálculo rápido), Defesa (CA), Iniciativa, atributos modulares, inventário/mochila e rolador de dados com áudio.
 - **Painel do Mestre com Campanhas Unificadas:** Criação, edição, alternância e isolamento completo de campanhas integrados no topo do painel, cadastro simplificado de jogadores da mesa, rolador de dados poliédricos (d4 a d100 com atalhos numéricos 1 a 7) e bloco de anotações de sessão com salvamento contínuo (`oninput`).
 - **Fichas Digitais Parametrizáveis:** Controle de atributos vitais (Vida Máxima, Iniciativa, Defesa/CA e Mochila/Inventário detalhado), criação dinâmica de parâmetros personalizados pelo mestre e envio em um clique (`⚔️ Ao Combate`).
-- **Portabilidade Total em JSON:** Exportação e importação de backup geral da campanha e de fichas individuais avulsas em formato `.json`.
+- **Suíte de Temas e Criador de Temas Customizados:** Seleção imediata entre 4 temas visuais integrados (*Dark Obsidian*, *Pergaminho Fantasia*, *Cyberpunk Night* e *Grimdark Monocromo*), além de um **Criador de Temas** completo com escolha livre de paleta de cores (fundo, cards, barra lateral, texto, destaque e bordas), suporte a **imagem de fundo personalizada** (upload de arquivo local ou link web externo) com controle de opacidade do overlay (0% a 100%), *live preview* em tempo real e exportação/importação de temas em arquivos `.json`.
+- **Portabilidade Total em JSON:** Exportação e importação de backup geral da campanha, de fichas individuais avulsas e de temas visuais personalizados em formato `.json`.
 - **Simulação de Combate Tático:** Rastreador ágil de iniciativa e turnos (com avanço automático de rodadas e destaque do combatente ativo via atalhos de teclado), recrutamento em um clique dos jogadores, inserção rápida de inimigos/NPCs, ajuste rápido de dano/cura (-5, -1, +1, +5) e alternância instantânea de condições de status (Caído, Atordoado, Sangrando, Envenenado, Cego, Invisível).
 - **Acessibilidade Universal:** Painel de configurações com escala de texto customizável, modo de alto contraste, fonte adaptada para dislexia (*Lexend*), redução de animações e retorno sonoro/leitura por voz das rolagens de dados.
 
@@ -89,7 +90,7 @@ OpenRPG/
 ├── index.html               # Vitrine e roteamento inicial (Entrada como Mestre ou Jogador)
 ├── jogador.html             # Área do Jogador Standalone (Ficha solo, HP, mochila e dados)
 ├── mestre.html              # Painel do Mestre e Campanhas Unificadas (Jogadores, dados e anotações)
-├── settings.js              # Módulo compartilhado de Acessibilidade, Áudio e Toasts
+├── settings.js              # Módulo compartilhado de Temas, Criador de Temas, Acessibilidade e Áudio
 ├── style.css                # Folha de estilos unificada e design system da aplicação
 └── README.md                # Documentação oficial do projeto
 ```

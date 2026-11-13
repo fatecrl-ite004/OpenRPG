@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap');
 
 :root {
     --bg-app: #0c0f16;
@@ -1230,14 +1230,23 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    opacity: 0.75;
-    cursor: not-allowed;
+    opacity: 0.85;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.theme-card-option:hover {
+    opacity: 1;
+    border-color: var(--accent);
+    transform: translateY(-1px);
 }
 
 .theme-card-option.current {
     opacity: 1;
     border-color: var(--accent);
-    background: rgba(59, 130, 246, 0.08);
+    background: var(--accent-subtle);
+    box-shadow: 0 0 0 1px var(--accent);
 }
 
 .theme-card-option strong {
@@ -1248,6 +1257,74 @@ button:hover {
 .theme-card-option span {
     font-size: 10.5px;
     color: var(--text-muted);
+}
+
+body.has-bg-image {
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+body.has-bg-image .sidebar,
+body.has-bg-image .standalone-header,
+body.has-bg-image .panel,
+body.has-bg-image .role-card,
+body.has-bg-image .card {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.theme-custom-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.theme-color-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    gap: 8px;
+}
+
+.theme-color-label {
+    font-size: 11.5px;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+}
+
+.theme-color-label small {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.theme-color-input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.theme-color-input::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.theme-color-input::-webkit-color-swatch {
+    border: none;
+    border-radius: var(--radius-sm);
 }
 
 .a11y-list {
@@ -1604,7 +1681,7 @@ body.reduce-motion *::after {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: var(--bg-app);
+    background-color: transparent;
 }
 .standalone-header {
     display: flex;
